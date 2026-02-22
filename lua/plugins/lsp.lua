@@ -4,7 +4,7 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
     opts = {
         -- Enable inlay hints globally (Neovim 0.10+)
         inlay_hints = {
-            enabled = true,
+            enabled = false,
             exclude = {"markdown", "text", "gitcommit"}
         },
 

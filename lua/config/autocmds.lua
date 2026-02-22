@@ -40,6 +40,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
             return
         end
 
-        vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+            -- Only enable inlay hints if globally enabled
+            local global_enabled = false
+            if vim.g.lsp_inlay_hints_enabled ~= nil then
+                global_enabled = vim.g.lsp_inlay_hints_enabled
+            else
+                -- fallback to opts in plugins/lsp.lua if available
+                local ok, lspconfig = pcall(require, "plugins.lsp")
+                if ok and lspconfig and lspconfig[1] and lspconfig[1].opts and lspconfig[1].opts.inlay_hints then
+                    global_enabled = lspconfig[1].opts.inlay_hints.enabled
+                end
+            end
+            vim.lsp.inlay_hint.enable(global_enabled, { bufnr = args.buf })
     end,
 })

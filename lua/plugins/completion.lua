@@ -322,4 +322,31 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
         }
     }
 }, -- Snippets: friendly-snippets gives VS Code-like snippet library
-{"rafamadriz/friendly-snippets"}}
+{"rafamadriz/friendly-snippets"}, -- nvim-cmp sources for LSP, buffer, path, cmdline
+{
+    "hrsh7th/nvim-cmp",
+    event = {"InsertEnter", "CmdlineEnter"},
+    dependencies = {"hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "hrsh7th/cmp-cmdline"},
+    config = function()
+        local cmp = require("cmp")
+        cmp.setup({
+            -- Add your nvim-cmp config here or leave empty for defaults
+        })
+        -- Cmdline completion
+        cmp.setup.cmdline(":", {
+            sources = {{
+                name = "cmdline"
+            }}
+        })
+        cmp.setup.cmdline("/", {
+            sources = {{
+                name = "buffer"
+            }}
+        })
+    end
+}, -- Inline function signature help
+{
+    "ray-x/lsp_signature.nvim",
+    event = "LspAttach",
+    opts = {}
+}}

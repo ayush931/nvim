@@ -22,6 +22,15 @@ vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged", "FocusLost"}, {
     end
 })
 
+vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged", "FocusLost"}, {
+    pattern = "*",
+    callback = function()
+        if vim.bo.modified and vim.bo.buftype == "" and vim.fn.expand("%") ~= "" then
+            vim.cmd("silent! write")
+        end
+    end
+})
+
 -- Enable inlay hints when LSP attaches to a buffer (with sensible exclusions)
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
@@ -34,23 +43,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local excluded = {
             markdown = true,
             text = true,
-            gitcommit = true,
+            gitcommit = true
         }
         if excluded[ft] then
             return
         end
 
-            -- Only enable inlay hints if globally enabled
-            local global_enabled = false
-            if vim.g.lsp_inlay_hints_enabled ~= nil then
-                global_enabled = vim.g.lsp_inlay_hints_enabled
-            else
-                -- fallback to opts in plugins/lsp.lua if available
-                local ok, lspconfig = pcall(require, "plugins.lsp")
-                if ok and lspconfig and lspconfig[1] and lspconfig[1].opts and lspconfig[1].opts.inlay_hints then
-                    global_enabled = lspconfig[1].opts.inlay_hints.enabled
-                end
+        -- Only enable inlay hints if globally enabled
+        local global_enabled = false
+        if vim.g.lsp_inlay_hints_enabled ~= nil then
+            global_enabled = vim.g.lsp_inlay_hints_enabled
+        else
+            -- fallback to opts in plugins/lsp.lua if available
+            local ok, lspconfig = pcall(require, "plugins.lsp")
+            if ok and lspconfig and lspconfig[1] and lspconfig[1].opts and lspconfig[1].opts.inlay_hints then
+                global_enabled = lspconfig[1].opts.inlay_hints.enabled
             end
-            vim.lsp.inlay_hint.enable(global_enabled, { bufnr = args.buf })
-    end,
+        end
+        vim.lsp.inlay_hint.enable(global_enabled, {
+            bufnr = args.buf
+        })
+    end
 })

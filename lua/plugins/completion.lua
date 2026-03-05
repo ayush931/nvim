@@ -187,8 +187,8 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
     "mason-org/mason.nvim",
     opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
-        vim.list_extend(opts.ensure_installed, {"vtsls", "emmet-language-server", "tailwindcss-language-server",
-                                                "css-lsp", "json-lsp", "eslint-lsp", "prettierd"})
+        vim.list_extend(opts.ensure_installed,
+            {"vtsls", "emmet-language-server", "tailwindcss-language-server", "css-lsp", "eslint-lsp"})
     end
 }, -- Formatting with Prettier (like VS Code default formatter)
 {

@@ -4,7 +4,7 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
     optional = true,
     config = function()
         local dap = require("dap")
-        local install_dir = require("mason.settings").current.install_root_dir
+        local install_dir = vim.fn.stdpath("data") .. "/mason"
 
         dap.adapters["pwa-node"] = dap.adapters["pwa-node"] or {
             type = "server",
@@ -45,13 +45,6 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
             eslint = {}
         }
     }
-}, -- Mason: install required tooling
-{
-    "mason-org/mason.nvim",
-    opts = function(_, opts)
-        opts.ensure_installed = opts.ensure_installed or {}
-        vim.list_extend(opts.ensure_installed, {"js-debug-adapter", "eslint-lsp"})
-    end
 }, -- React Native commands via which-key
 {
     "folke/which-key.nvim",

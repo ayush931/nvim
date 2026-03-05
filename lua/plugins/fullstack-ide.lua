@@ -129,31 +129,10 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
         vim.g.db_ui_use_nerd_fonts = 1
         vim.g.db_ui_save_location = vim.fn.stdpath("data") .. "/db_ui"
     end
-}, -- AI assistant defaults
-{
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    event = "InsertEnter",
-    opts = {
-        suggestion = {
-            enabled = true,
-            auto_trigger = true
-        },
-        panel = {
-            enabled = false
-        },
-        filetypes = {
-            markdown = true,
-            help = true
-        }
-    }
 }, {
     "folke/which-key.nvim",
     opts = {
         spec = {{
-            "<leader>a",
-            group = "ai"
-        }, {
             "<leader>d",
             group = "data/db"
         }, {

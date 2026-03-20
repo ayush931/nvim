@@ -15,7 +15,7 @@ return {
       float_opts = {
         border = "curved",
       },
-      shade_terminals = true,
+      shade_terminals = false,
     },
   },
 

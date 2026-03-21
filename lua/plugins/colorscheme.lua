@@ -29,18 +29,32 @@ return { -- Add the VS Code theme plugin
 
         local function apply_transparency()
             local groups = {"Normal", "NormalNC", "NormalFloat", "NormalSB", "FloatBorder", "SignColumn", "FoldColumn",
-                            "LineNr", "CursorLineNr", "EndOfBuffer", "StatusLine", "StatusLineNC", "TabLine",
-                            "TabLineFill", "WinBar", "WinBarNC", "WinSeparator", "VertSplit", "Pmenu", "PmenuSbar",
-                            "PmenuThumb", "NvimTreeNormal", "NvimTreeNormalNC", "NeoTreeNormal", "NeoTreeNormalNC",
-                            "NeoTreeFloatNormal", "NeoTreeFloatBorder", "TelescopeNormal", "TelescopeBorder",
-                            "TelescopePromptNormal", "TelescopePromptBorder", "TelescopeResultsNormal",
-                            "TelescopeResultsBorder", "TelescopePreviewNormal", "TelescopePreviewBorder",
-                            "TroubleNormal", "TroubleNormalNC", "LazyNormal", "MasonNormal", "WhichKeyFloat",
-                            "NoiceCmdlinePopup", "NoiceCmdlinePopupBorder", "NoicePopup", "NoicePopupBorder",
-                            "NotifyBackground"}
+                            "LineNr", "CursorLine", "CursorColumn", "CursorLineNr", "EndOfBuffer", "StatusLine",
+                            "StatusLineNC", "TabLine", "TabLineFill", "WinBar", "WinBarNC", "WinSeparator", "VertSplit",
+                            "Pmenu", "PmenuSbar", "PmenuThumb", "NvimTreeNormal", "NvimTreeNormalNC",
+                            "NvimTreeFolderName", "NvimTreeOpenedFolderName", "NvimTreeEmptyFolderName",
+                            "NvimTreeCursorLine", "NeoTreeNormal", "NeoTreeNormalNC", "NeoTreeFloatNormal",
+                            "NeoTreeFloatBorder", "NeoTreeDirectoryName", "NeoTreeDirectoryIcon", "NeoTreeCursorLine",
+                            "TelescopeNormal", "TelescopeBorder", "TelescopePromptNormal", "TelescopePromptBorder",
+                            "TelescopeResultsNormal", "TelescopeResultsBorder", "TelescopePreviewNormal",
+                            "TelescopePreviewBorder", "TroubleNormal", "TroubleNormalNC", "LazyNormal", "MasonNormal",
+                            "WhichKeyFloat", "NoiceCmdlinePopup", "NoiceCmdlinePopupBorder", "NoicePopup",
+                            "NoicePopupBorder", "NotifyBackground", "Cursor", "lCursor", "CursorIM", "TermCursor",
+                            "Directory", "netrwDir"}
 
             for _, group in ipairs(groups) do
                 vim.api.nvim_set_hl(0, group, {
+                    bg = "none",
+                    ctermbg = "none"
+                })
+            end
+
+            local folder_groups = {"Directory", "netrwDir", "NvimTreeFolderName", "NvimTreeOpenedFolderName",
+                                   "NvimTreeEmptyFolderName", "NeoTreeDirectoryName"}
+
+            for _, group in ipairs(folder_groups) do
+                vim.api.nvim_set_hl(0, group, {
+                    fg = "#89b4fa",
                     bg = "none",
                     ctermbg = "none"
                 })

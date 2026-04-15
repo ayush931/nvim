@@ -38,26 +38,4 @@ return {
       auto_preview = true,
     },
   },
-
-  -- Smooth scrolling
-  {
-    "karb94/neoscroll.nvim",
-    event = "VeryLazy",
-    opts = {
-      mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "zt", "zz", "zb" },
-      hide_cursor = false,
-      stop_eof = true,
-      respect_scrolloff = true,
-    },
-  },
-
-  -- Highlight color codes inline (#fff, rgb, hsl)
-  {
-    "brenoprata10/nvim-highlight-colors",
-    event = "BufReadPre",
-    opts = {
-      render = "virtual",
-      enable_tailwind = true,
-    },
-  },
 }

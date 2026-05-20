@@ -102,4 +102,18 @@ return {
       },
     },
   },
+
+  -- Python Venv Selector
+  {
+    "linux-cultist/venv-selector.nvim",
+    dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap-python" },
+    cmd = "VenvSelect",
+    opts = {
+      name = { "venv", ".venv", "env", ".env" },
+      auto_refresh = true,
+    },
+    keys = {
+      { "<leader>cv", "<cmd>VenvSelect<cr>", desc = "Select VirtualEnv" },
+    },
+  },
 }

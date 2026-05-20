@@ -6,7 +6,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
         vim.list_extend(opts.ensure_installed, { -- LSPs
         "bash-language-server", "docker-compose-language-service", "dockerfile-language-server", "gopls",
         "graphql-language-service-cli", "json-lsp", "lua-language-server", "marksman", "prisma-language-server",
-        "pyright", "ruff", "rust-analyzer", "sqlls", "taplo", "terraform-ls", "tflint", "yaml-language-server",
+        "basedpyright", "ruff", "rust-analyzer", "sqlls", "taplo", "terraform-ls", "tflint", "yaml-language-server",
 
         -- Formatters / linters
         "black", "goimports", "isort", "prettierd", "shfmt", "stylua", "sqlfluff", -- DAP / debuggers
@@ -45,7 +45,18 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
                 }
             },
             marksman = {},
-            pyright = {},
+            basedpyright = {
+                settings = {
+                    basedpyright = {
+                        analysis = {
+                            typeCheckingMode = "basic",
+                            autoSearchPaths = true,
+                            useLibraryCodeForTypes = true,
+                            diagnosticMode = "openFilesOnly",
+                        },
+                    },
+                },
+            },
             ruff = {
                 mason = false,
                 enabled = vim.fn.executable("ruff") == 1
@@ -110,7 +121,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
     opts = {
         formatters_by_ft = {
             lua = {"stylua"},
-            python = {"ruff_format", "isort", "black"},
+            python = {"ruff_organize_imports", "ruff_format"},
             sh = {"shfmt"},
             bash = {"shfmt"},
             zsh = {"shfmt"},

@@ -22,15 +22,6 @@ vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged", "FocusLost"}, {
     end
 })
 
-vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged", "FocusLost"}, {
-    pattern = "*",
-    callback = function()
-        if vim.bo.modified and vim.bo.buftype == "" and vim.fn.expand("%") ~= "" then
-            vim.cmd("silent! write")
-        end
-    end
-})
-
 -- Enable inlay hints when LSP attaches to a buffer (with sensible exclusions)
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
@@ -63,5 +54,36 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.lsp.inlay_hint.enable(global_enabled, {
             bufnr = args.buf
         })
+    end
+})
+
+-- Force line wrap for diagnostic popups
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+        vim.api.nvim_create_autocmd("CursorHold", {
+            buffer = args.buf,
+            callback = function()
+                local _, winid = vim.diagnostic.open_float(nil, {
+                    focusable = false,
+                    close_events = {"CursorMoved", "CursorMovedI", "BufLeave", "InsertEnter"},
+                    border = "rounded",
+                    source = "always",
+                    prefix = " ",
+                    scope = "line"
+                })
+                if winid then
+                    vim.wo[winid].wrap = true
+                end
+            end
+        })
+    end
+})
+
+-- Ensure floating windows for diagnostics wrap text
+vim.api.nvim_create_autocmd("WinEnter", {
+    callback = function()
+        if vim.api.nvim_win_get_config(0).relative ~= "" then
+            vim.wo.wrap = true
+        end
     end
 })

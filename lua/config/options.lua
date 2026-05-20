@@ -28,6 +28,9 @@ vim.opt.confirm = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
+-- Ergonomics
+vim.opt.clipboard = "unnamedplus"
+vim.opt.cursorline = true
 
 -- Word wrap defaults
 vim.opt.wrap = true
@@ -35,7 +38,7 @@ vim.opt.linebreak = true
 vim.opt.breakindent = true
 vim.opt.showbreak = "↳ "
 
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.softtabstop = 2
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
 vim.opt.expandtab = true

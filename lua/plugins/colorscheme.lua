@@ -1,69 +1,23 @@
-return { -- Add the VS Code theme plugin
-{
+return {
+  {
     "Mofiqul/vscode.nvim",
-    -- Make sure this loads first
     lazy = false,
     priority = 1000,
-    opts = {
-        -- Set the style to "dark" or "light" as desired
-        style = "dark",
-
-        -- Use terminal background everywhere
-        transparent = true,
-
-        -- Adjust specific colors if needed (optional)
-        color_overrides = {},
-
-        -- Configure which plugins this theme should integrate with
-        integrations = {
-            telescope = true,
-            nvimtree = true,
-            cmp = true,
-            gitsigns = true,
-            lualine = true
-        }
-    },
-    -- Load the colorscheme on startup
     config = function()
-        vim.cmd("colorscheme vscode")
-
-        local function apply_transparency()
-            local groups = {"Normal", "NormalNC", "NormalFloat", "NormalSB", "FloatBorder", "SignColumn", "FoldColumn",
-                            "LineNr", "CursorLine", "CursorColumn", "CursorLineNr", "EndOfBuffer", "StatusLine",
-                            "StatusLineNC", "TabLine", "TabLineFill", "WinBar", "WinBarNC", "WinSeparator", "VertSplit",
-                            "Pmenu", "PmenuSbar", "PmenuThumb", "NvimTreeNormal", "NvimTreeNormalNC",
-                            "NvimTreeFolderName", "NvimTreeOpenedFolderName", "NvimTreeEmptyFolderName",
-                            "NvimTreeCursorLine", "NeoTreeNormal", "NeoTreeNormalNC", "NeoTreeFloatNormal",
-                            "NeoTreeFloatBorder", "NeoTreeDirectoryName", "NeoTreeDirectoryIcon", "NeoTreeCursorLine",
-                            "TelescopeNormal", "TelescopeBorder", "TelescopePromptNormal", "TelescopePromptBorder",
-                            "TelescopeResultsNormal", "TelescopeResultsBorder", "TelescopePreviewNormal",
-                            "TelescopePreviewBorder", "TroubleNormal", "TroubleNormalNC", "LazyNormal", "MasonNormal",
-                            "WhichKeyFloat", "NoiceCmdlinePopup", "NoiceCmdlinePopupBorder", "NoicePopup",
-                            "NoicePopupBorder", "NotifyBackground", "Cursor", "lCursor", "CursorIM", "TermCursor",
-                            "Directory", "netrwDir"}
-
-            for _, group in ipairs(groups) do
-                vim.api.nvim_set_hl(0, group, {
-                    bg = "none",
-                    ctermbg = "none"
-                })
-            end
-
-            local folder_groups = {"Directory", "netrwDir", "NvimTreeFolderName", "NvimTreeOpenedFolderName",
-                                   "NvimTreeEmptyFolderName", "NeoTreeDirectoryName"}
-
-            for _, group in ipairs(folder_groups) do
-                vim.api.nvim_set_hl(0, group, {
-                    fg = "#89b4fa",
-                    bg = "none",
-                    ctermbg = "none"
-                })
-            end
-        end
-
-        apply_transparency()
-        vim.api.nvim_create_autocmd("ColorScheme", {
-            callback = apply_transparency
-        })
-    end
-}}
+      require("vscode").setup({
+        style = "dark",
+        -- Enable transparent background if you prefer
+        -- transparent = true,
+        -- Enable italic comment
+        italic_comments = true,
+        -- Disable nvim-tree background color
+        disable_nvimtree_bg = true,
+        -- Override colors or highlights
+        group_overrides = {
+          -- Example: ['@variable.builtin.python'] = { fg = '#569CD6' },
+        },
+      })
+      require("vscode").load()
+    end,
+  },
+}

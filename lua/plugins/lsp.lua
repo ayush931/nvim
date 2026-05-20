@@ -26,7 +26,10 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
             float = {
                 focusable = true,
                 border = "rounded",
-                source = true
+                source = "always",
+                header = "",
+                prefix = "",
+                max_width = 100,
             }
         }
     }
@@ -70,6 +73,15 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         },
         rename = {
             in_select = false
+        },
+        diagnostic = {
+            max_width = 0.8,
+            max_height = 0.6,
+            wrap_line = true,
+        },
+        hover = {
+            max_width = 0.9,
+            max_height = 0.8,
         },
         ui = {
             border = "rounded"

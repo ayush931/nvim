@@ -29,6 +29,28 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
 -- Ergonomics
+if vim.fn.executable("wl-copy") == 1 and vim.fn.executable("wl-paste") == 1 then
+  local paste_cmd = "wl-paste --no-newline --type text/plain"
+  local paste_primary_cmd = "wl-paste --primary --no-newline --type text/plain"
+  if vim.fn.executable("timeout") == 1 then
+    paste_cmd = "timeout 0.5 " .. paste_cmd
+    paste_primary_cmd = "timeout 0.5 " .. paste_primary_cmd
+  end
+
+  vim.g.clipboard = {
+    name = "wl-clipboard",
+    copy = {
+      ["+"] = "wl-copy --type text/plain",
+      ["*"] = "wl-copy --primary --type text/plain",
+    },
+    paste = {
+      ["+"] = paste_cmd,
+      ["*"] = paste_primary_cmd,
+    },
+    cache_enabled = 1,
+  }
+end
+
 vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = true
 

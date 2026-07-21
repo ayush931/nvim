@@ -63,16 +63,17 @@ return {
     opts = {
       default_component_configs = {
         indent = {
-          indent_size = 1,
+          indent_size = 4,
           padding = 0,
-          expander_collapsed = "▸",
-          expander_expanded = "▾",
+          expander_collapsed = ">",
+          expander_expanded = "v",
+          with_expanders = true,
         },
         icon = {
-          folder_closed = "",
-          folder_open = "",
-          folder_empty = "",
-          folder_empty_open = "",
+          folder_closed = "",
+          folder_open = "",
+          folder_empty = "",
+          folder_empty_open = "",
         },
         git_status = {
           symbols = {

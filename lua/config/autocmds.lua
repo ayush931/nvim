@@ -12,6 +12,19 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
         vim.bo.filetype = "prisma"
     end
 })
+
+local four_space_indent = vim.api.nvim_create_augroup("four_space_indent", { clear = true })
+vim.api.nvim_create_autocmd({ "BufEnter", "FileType", "BufWritePre" }, {
+    group = four_space_indent,
+    pattern = "*",
+    callback = function()
+        vim.bo.tabstop = 4
+        vim.bo.shiftwidth = 4
+        vim.bo.softtabstop = 4
+        vim.bo.expandtab = true
+    end,
+})
+
 -- Auto save files when leaving insert mode or losing focus
 vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged", "FocusLost"}, {
     pattern = "*",

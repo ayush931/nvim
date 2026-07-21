@@ -159,10 +159,12 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
 
             -- JSON schemas: turbo.json, tsconfig, package.json etc.
             jsonls = {
-                on_new_config = function(new_config)
+                before_init = function(_, new_config)
+                    new_config.settings.json = new_config.settings.json or {}
                     new_config.settings.json.schemas = new_config.settings.json.schemas or {}
                     vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas({
                         extra = {{
+                            name = "turbo.json",
                             fileMatch = {"turbo.json"},
                             url = "https://turbo.build/schema.json"
                         }}
@@ -188,7 +190,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
     opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
         vim.list_extend(opts.ensure_installed,
-            {"vtsls", "emmet-language-server", "tailwindcss-language-server", "css-lsp", "eslint-lsp"})
+            {"vtsls", "emmet-language-server", "tailwindcss-language-server", "css-lsp", "eslint-lsp", "prettier"})
     end
 }, -- Formatting with Prettier (like VS Code default formatter)
 {
@@ -197,58 +199,58 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
     opts = {
         formatters_by_ft = {
             javascript = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             javascriptreact = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             typescript = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             typescriptreact = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             json = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             jsonc = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             html = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             css = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             scss = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             markdown = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             },
             yaml = {
-                "prettierd",
                 "prettier",
+                "prettierd",
                 stop_after_first = true
             }
         }

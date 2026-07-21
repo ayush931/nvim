@@ -7,6 +7,13 @@ return {
     },
     keys = {
       {
+        "<leader>ff",
+        function()
+          require("telescope.builtin").find_files({ cwd = LazyVim.root() })
+        end,
+        desc = "Find Files (Root Dir)",
+      },
+      {
         "<leader>fW",
         function()
           require("telescope").extensions.live_grep_args.live_grep_args()

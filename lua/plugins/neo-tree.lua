@@ -20,9 +20,9 @@ return {
       {
         "<leader>e",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
+          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
         end,
-        desc = "Explorer NeoTree (Root Dir)",
+        desc = "Explorer NeoTree (cwd)",
       },
       {
         "<leader>E",
@@ -34,9 +34,9 @@ return {
       {
         "<leader>fe",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
+          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
         end,
-        desc = "Explorer NeoTree (Root Dir)",
+        desc = "Explorer NeoTree (cwd)",
       },
       {
         "<leader>fE",
@@ -61,6 +61,33 @@ return {
       },
     },
     opts = {
+      default_component_configs = {
+        indent = {
+          indent_size = 1,
+          padding = 0,
+          expander_collapsed = "▸",
+          expander_expanded = "▾",
+        },
+        icon = {
+          folder_closed = "",
+          folder_open = "",
+          folder_empty = "",
+          folder_empty_open = "",
+        },
+        git_status = {
+          symbols = {
+            added = "",
+            deleted = "",
+            modified = "",
+            renamed = "",
+            untracked = "",
+            ignored = "",
+            unstaged = "",
+            staged = "",
+            conflict = "",
+          },
+        },
+      },
       filesystem = {
         bind_to_cwd = false, -- Don't sync neo-tree root with cwd changes
         filtered_items = {

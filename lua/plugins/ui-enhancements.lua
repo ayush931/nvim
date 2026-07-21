@@ -3,6 +3,10 @@
 -- ╚══════════════════════════════════════════════════════════════╝
 
 return {
+  { "folke/snacks.nvim", opts = { dashboard = { enabled = false } } },
+
+  { "akinsho/bufferline.nvim", enabled = false },
+
   -- Keep only essentials to reduce UI noise and startup overhead.
   {
     "lukas-reineke/indent-blankline.nvim",

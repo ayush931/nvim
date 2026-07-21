@@ -41,11 +41,3 @@ map("n", "<leader>uh", function()
 end, {
     desc = "Toggle Inlay Hints"
 })
-
-vim.keymap.set("n", "<leader>e", function()
-  if vim.bo.filetype == "netrw" then
-    vim.cmd("bd")
-  else
-    vim.cmd("Explore")
-  end
-end, { desc = "Toggle File Explorer" })

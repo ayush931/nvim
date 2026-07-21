@@ -39,13 +39,27 @@ return { -- Side-by-side diff viewer and file history
     {
         "lewis6991/gitsigns.nvim",
         event = {"BufReadPre", "BufNewFile"},
+        init = function()
+            local function set_git_sign_highlights()
+                vim.api.nvim_set_hl(0, "GitSignsAdd", {fg = "#7ee787", bg = "NONE", bold = true})
+                vim.api.nvim_set_hl(0, "GitSignsChange", {fg = "#79c0ff", bg = "NONE", bold = true})
+                vim.api.nvim_set_hl(0, "GitSignsDelete", {fg = "#ff7b72", bg = "NONE", bold = true})
+                vim.api.nvim_set_hl(0, "GitSignsChangeDelete", {fg = "#d2a8ff", bg = "NONE", bold = true})
+                vim.api.nvim_set_hl(0, "SignColumn", {bg = "NONE"})
+            end
+
+            set_git_sign_highlights()
+            vim.api.nvim_create_autocmd("ColorScheme", {
+                callback = set_git_sign_highlights
+            })
+        end,
         opts = {
             signs = {
-                add = {hl = "GitGutterAdd", text = "+", numhl = "GitSignsAddNr"},
-                change = {hl = "GitGutterChange", text = "~", numhl = "GitSignsChangeNr"},
-                delete = {hl = "GitGutterDelete", text = "_", numhl = "GitSignsDeleteNr"},
-                topdelete = {hl = "GitGutterDelete", text = "‾", numhl = "GitSignsDeleteNr"},
-                changedelete = {hl = "GitGutterChangeDelete", text = "~", numhl = "GitSignsChangeNr"}
+                add = {hl = "GitSignsAdd", text = "+", numhl = "GitSignsAddNr"},
+                change = {hl = "GitSignsChange", text = "~", numhl = "GitSignsChangeNr"},
+                delete = {hl = "GitSignsDelete", text = "_", numhl = "GitSignsDeleteNr"},
+                topdelete = {hl = "GitSignsDelete", text = "‾", numhl = "GitSignsDeleteNr"},
+                changedelete = {hl = "GitSignsChangeDelete", text = "±", numhl = "GitSignsChangeNr"}
             },
             current_line_blame = true,
             on_attach = function(bufnr)

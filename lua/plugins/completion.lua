@@ -266,6 +266,10 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
             ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
             ["<CR>"] = { "accept", "fallback" },
             ["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
+            ["<C-space>"] = { "show_documentation", "hide_documentation", "fallback" },
+            ["<C-d>"] = { "show_documentation", "hide_documentation", "fallback" },
+            ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+            ["<C-b>"] = { "scroll_documentation_up", "fallback" },
         },
         completion = {
             accept = {

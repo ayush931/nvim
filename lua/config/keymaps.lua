@@ -41,3 +41,22 @@ map("n", "<leader>uh", function()
 end, {
     desc = "Toggle Inlay Hints"
 })
+
+map("n", "gl", function()
+    local has_saga, saga = pcall(require, "lspsaga.diagnostic")
+    if has_saga and saga then
+        vim.cmd("Lspsaga show_line_diagnostics ++unfocus")
+    else
+        vim.diagnostic.open_float(nil, {
+            border = "rounded",
+            source = "always",
+            focusable = false,
+            max_width = 120,
+            max_height = 30,
+            wrap = true,
+            close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+        })
+    end
+end, {
+    desc = "Show Full Line Diagnostics & Suggestions"
+})

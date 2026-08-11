@@ -14,6 +14,7 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         },
 
         -- Better diagnostic display
+        -- Better diagnostic display
         diagnostics = {
             underline = true,
             update_in_insert = false,
@@ -29,7 +30,10 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
                 source = "always",
                 header = "",
                 prefix = "",
-                max_width = 100,
+                max_width = 120,
+                max_height = 30,
+                wrap = true,
+                close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
             }
         }
     }
@@ -67,21 +71,32 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
             }
         },
         definition = {
+            width = 0.85,
+            height = 0.65,
             keys = {
-                edit = "<CR>"
+                edit = "<CR>",
+                vsplit = "<C-v>",
+                split = "<C-x>",
+                tabe = "<C-t>",
+                quit = "q",
+                close = "<Esc>",
             }
         },
         rename = {
             in_select = false
         },
         diagnostic = {
-            max_width = 0.8,
-            max_height = 0.6,
+            max_width = 0.9,
+            max_height = 0.8,
             wrap_line = true,
+            show_code_action = true,
+            show_source = true,
+            jump_num_shortcut = true,
         },
         hover = {
             max_width = 0.9,
             max_height = 0.8,
+            open_link = "gx",
         },
         ui = {
             border = "rounded"
@@ -139,8 +154,12 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         desc = "Rename Symbol"
     }, {
         "<leader>cD",
-        "<cmd>Lspsaga show_line_diagnostics<CR>",
-        desc = "Line Diagnostics"
+        "<cmd>Lspsaga show_line_diagnostics ++unfocus<CR>",
+        desc = "Line Diagnostics (Full Error & Suggestions)"
+    }, {
+        "gl",
+        "<cmd>Lspsaga show_line_diagnostics ++unfocus<CR>",
+        desc = "Show Line Diagnostics & Suggestions"
     }, {
         "[d",
         "<cmd>Lspsaga diagnostic_jump_prev<CR>",

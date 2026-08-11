@@ -72,7 +72,7 @@ vim.opt.breakindent = true
 vim.opt.showbreak = "↳ "
 
 -- Do not automatically insert comment leader on next line when pressing Enter or o/O
-vim.opt.formatoptions:remove({ "c", "r", "o" })
+vim.opt.formatoptions:remove("cro")
 
 -- Ensure selection does not switch to select/visual mode on completion
 vim.opt.selectmode = ""

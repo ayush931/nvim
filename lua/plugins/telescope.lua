@@ -6,12 +6,15 @@ return {
       "nvim-telescope/telescope-live-grep-args.nvim",
     },
     keys = {
+      -- Override LazyVim defaults to always use cwd
+      { "<leader>fF", false },
+      { "<leader><space>", false },
       {
         "<leader>ff",
         function()
-          require("telescope.builtin").find_files({ cwd = LazyVim.root() })
+          require("telescope.builtin").find_files({ cwd = vim.uv.cwd(), hidden = true })
         end,
-        desc = "Find Files (Root Dir)",
+        desc = "Find Files (cwd)",
       },
       {
         "<leader>fW",

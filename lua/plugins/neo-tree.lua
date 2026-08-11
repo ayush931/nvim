@@ -21,9 +21,9 @@ return {
       {
         "<leader>e",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
+          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
         end,
-        desc = "Explorer NeoTree (Root Dir)",
+        desc = "Explorer NeoTree (cwd)",
       },
       {
         "<leader>E",
@@ -35,9 +35,9 @@ return {
       {
         "<leader>fe",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
+          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
         end,
-        desc = "Explorer NeoTree (Root Dir)",
+        desc = "Explorer NeoTree (cwd)",
       },
       {
         "<leader>fE",
@@ -79,7 +79,7 @@ return {
           hide_hidden = false,
         },
         follow_current_file = {
-          enabled = true,
+          enabled = false,
           leave_dirs_open = false,
         },
         window = {

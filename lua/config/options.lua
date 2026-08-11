@@ -14,7 +14,7 @@ vim.g.root_spec = { "lsp", { ".git", "turbo.json" }, "cwd" }
 
 -- Set cursor to block in all modes (including insert mode)
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:block,r-cr-o:block"
-vim.opt.guifont = "Fira Code:h10.5"
+vim.opt.guifont = "Fira Code:h8"
 
 
 

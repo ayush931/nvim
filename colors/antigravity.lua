@@ -1,187 +1,519 @@
 -- Antigravity Colorscheme
 -- A premium, developer-focused low-fatigue dark theme
--- Designed specifically to minimize eye strain and optimize readability over long sessions
+-- Designed to minimize eye strain while feeling vibrant, layered, and polished
 
-local colors = {
-  bg = "#0f1115",              -- Warm dark charcoal (extremely soft desaturated base, zero glare)
-  bg_nc = "#0b0c0e",           -- Non-current window background (subtly darker for focus)
-  bg_line = "#171a21",         -- Low-contrast soft cursor line
-  bg_visual = "#1e2635",       -- Muted slate-indigo visual selection
-  bg_search = "#273447",       -- Soft slate-blue search highlight
-  bg_highlight = "#1a1d24",    -- Soft general highlight background
-  bg_float = "#13161c",        -- Deeper dark charcoal for floating windows (creates depth)
-  border = "#262c36",          -- Soft, low-contrast slate border
-  gutter = "#0f1115",          -- Matching gutter for seamless interface
+local c = {
+  -- ── Base surfaces (neutral grey gradient, 5 tiers of depth) ──
+  bg_deep    = "#111111",        -- Deepest layer: inactive panes, gutters
+  bg         = "#181818",        -- Primary editing surface
+  bg_raised  = "#212121",        -- Cursorline, subtle lifts
+  bg_surface = "#262626",        -- Floats, popups, sidebars
+  bg_overlay = "#2e2e2e",        -- Menus, selections, visual
+  bg_accent  = "#383838",        -- Active selections, search matches
 
-  fg = "#c5cbd3",              -- Muted off-white/platinum (highly readable, avoids harsh pure white)
-  fg_muted = "#7d8a9a",        -- Soft slate grey for secondary text
-  fg_dark = "#556272",         -- Warm slate-grey (ideal for comments, very easy on the eyes)
+  -- ── Borders & chrome ──
+  border       = "#353535",      -- Default separator
+  border_focus = "#505050",      -- Focused / active borders
 
-  -- Syntax Colors (desaturated, warm, pastel, low blue-light impact)
-  purple = "#b392f0",          -- Muted lavender (keywords, control flow)
-  cyan = "#6ba6e9",            -- Steel blue (functions, methods)
-  green = "#8cb47a",           -- Sage/olive green (strings, very calming)
-  yellow = "#ecd185",          -- Muted warm gold (classes, structures)
-  orange = "#e09363",          -- Muted terracotta/amber (numbers, booleans)
-  red = "#e06c75",             -- Soft pastel red (errors, HTML/XML tags)
-  blue = "#82a1f1",            -- Soft desaturated blue (variables, identifiers)
-  teal = "#5fb3b3",            -- Muted seafoam teal (types, builtins)
-  magenta = "#cca1c8",         -- Muted pastel magenta (regex, special characters)
+  -- ── Foreground scale ──
+  fg         = "#d0d5dd",        -- Primary text (warm platinum)
+  fg_soft    = "#a3acba",        -- Secondary text, parameters
+  fg_muted   = "#6e7a8c",        -- Tertiary: line numbers, inactive tabs
+  fg_faint   = "#444e5e",        -- Comments, invisible chars
+  fg_ghost   = "#2a2a2a",        -- Indent guides, trailing whitespace
+
+  -- ── Syntax palette (rich but never neon) ──
+  rose       = "#e8737d",        -- Errors, HTML tags, deletions
+  coral      = "#e8956a",        -- Numbers, booleans, constants
+  amber      = "#e4c36a",        -- Warnings, classes, decorators
+  sage       = "#8ec87a",        -- Strings (warm, calming green)
+  jade       = "#5cc5a0",        -- Types, builtins (tropical green)
+  sky        = "#6db3e8",        -- Functions, methods
+  steel      = "#8ea6f0",        -- Variables, identifiers
+  lilac      = "#c49be0",        -- Keywords, control flow
+  mauve      = "#d6a0c8",        -- Regex, special chars, operators
+
+  -- ── Diagnostic tints (for underline + subtle background) ──
+  diag_err_bg  = "#1f1114",
+  diag_warn_bg = "#1f1a10",
+  diag_info_bg = "#0f1720",
+  diag_hint_bg = "#0f1a18",
+
+  -- ── Diff tints ──
+  diff_add_bg    = "#132618",
+  diff_change_bg = "#131d2e",
+  diff_delete_bg = "#261218",
+  diff_text_bg   = "#1e3050",
+
+  -- ── Git signs ──
+  git_add    = "#6db87a",
+  git_change = "#6ba8d8",
+  git_delete = "#d06870",
 }
 
+-- ─────────────────────────────────────────────────────────
+-- Highlight definitions
+-- ─────────────────────────────────────────────────────────
 local hl = {}
 
--- Editor Core UI (Ergonomic Contrast)
-hl.Normal = { fg = colors.fg, bg = colors.bg }
-hl.NormalNC = { fg = colors.fg, bg = colors.bg_nc }
-hl.Cursor = { reverse = true }
-hl.CursorLine = { bg = colors.bg_line }
-hl.CursorLineNr = { fg = colors.yellow, bold = true }
-hl.LineNr = { fg = colors.fg_dark }
-hl.Visual = { bg = colors.bg_visual }
-hl.Search = { bg = colors.bg_search, bold = true }
-hl.IncSearch = { bg = colors.bg_search, reverse = true, bold = true }
-hl.VertSplit = { fg = colors.border }
-hl.WinSeparator = { fg = colors.border }
-hl.ColorColumn = { bg = colors.bg_nc }
-hl.SignColumn = { bg = colors.bg }
-hl.Folded = { fg = colors.fg_muted, bg = colors.bg_nc }
-hl.FoldColumn = { fg = colors.fg_muted, bg = colors.bg }
-hl.Directory = { fg = colors.blue, bold = true }
-hl.Title = { fg = colors.yellow, bold = true }
+-- ── Editor Core ──
+hl.Normal       = { fg = c.fg, bg = c.bg }
+hl.NormalNC     = { fg = c.fg_soft, bg = c.bg_deep }
+hl.NormalFloat  = { fg = c.fg, bg = c.bg_surface }
+hl.FloatBorder  = { fg = c.border_focus, bg = c.bg_surface }
+hl.FloatTitle   = { fg = c.amber, bg = c.bg_surface }
 
--- Floating Windows & Completion Menu (Structured Depth)
-hl.NormalFloat = { fg = colors.fg, bg = colors.bg_float }
-hl.FloatBorder = { fg = colors.border, bg = colors.bg_float }
-hl.Pmenu = { fg = colors.fg, bg = colors.bg_float }
-hl.PmenuSel = { fg = colors.fg, bg = colors.bg_visual, bold = true }
-hl.PmenuSbar = { bg = colors.bg_nc }
-hl.PmenuThumb = { bg = colors.border }
-hl.WildMenu = { fg = colors.fg, bg = colors.bg_visual }
+hl.Cursor       = { reverse = true }
+hl.lCursor      = { link = "Cursor" }
+hl.CursorIM     = { link = "Cursor" }
+hl.TermCursor   = { reverse = true }
+hl.TermCursorNC = { fg = c.fg_muted }
+hl.CursorLine   = {}
+hl.CursorColumn = { bg = c.bg_raised }
+hl.CursorLineNr = { fg = c.amber }
+hl.LineNr       = { fg = c.fg_faint }
+hl.LineNrAbove  = { fg = c.fg_faint }
+hl.LineNrBelow  = { fg = c.fg_faint }
 
--- Statusline & Tabline (Minimal Visual Noise)
-hl.StatusLine = { fg = colors.fg, bg = colors.bg_nc }
-hl.StatusLineNC = { fg = colors.fg_muted, bg = colors.bg_nc }
-hl.TabLine = { fg = colors.fg_muted, bg = colors.bg_nc }
-hl.TabLineSel = { fg = colors.fg, bg = colors.bg }
-hl.TabLineFill = { bg = colors.bg_nc }
+hl.Visual       = { bg = c.bg_overlay }
+hl.VisualNOS    = { bg = c.bg_overlay }
+hl.Search       = { fg = c.fg, bg = c.bg_accent }
+hl.IncSearch    = { fg = c.bg, bg = c.amber }
+hl.CurSearch    = { fg = c.bg, bg = c.coral }
+hl.Substitute   = { fg = c.bg, bg = c.rose }
 
--- Standard Syntax Highlighting (Calm Contrast)
-hl.Comment = { fg = colors.fg_dark }
-hl.Constant = { fg = colors.orange }
-hl.String = { fg = colors.green }
-hl.Character = { fg = colors.green }
-hl.Number = { fg = colors.orange }
-hl.Boolean = { fg = colors.orange }
-hl.Float = { fg = colors.orange }
-hl.Identifier = { fg = colors.blue }
-hl.Function = { fg = colors.cyan }
-hl.Statement = { fg = colors.purple }
-hl.Conditional = { fg = colors.purple }
-hl.Repeat = { fg = colors.purple }
-hl.Label = { fg = colors.purple }
-hl.Operator = { fg = colors.magenta }
-hl.Keyword = { fg = colors.purple }
-hl.Exception = { fg = colors.purple }
-hl.PreProc = { fg = colors.purple }
-hl.Include = { fg = colors.purple }
-hl.Define = { fg = colors.purple }
-hl.Macro = { fg = colors.purple }
-hl.PreCondit = { fg = colors.purple }
-hl.Type = { fg = colors.teal }
-hl.StorageClass = { fg = colors.purple }
-hl.Structure = { fg = colors.teal }
-hl.Typedef = { fg = colors.teal }
-hl.Special = { fg = colors.yellow }
-hl.SpecialChar = { fg = colors.orange }
-hl.Tag = { fg = colors.red }
-hl.Delimiter = { fg = colors.fg_muted }
-hl.SpecialComment = { fg = colors.fg_muted }
-hl.Debug = { fg = colors.red }
-hl.Underlined = { underline = true }
-hl.Ignore = { fg = colors.fg_dark }
-hl.Error = { fg = colors.red, bold = true }
-hl.Todo = { fg = colors.yellow, bold = true }
+hl.MatchParen   = { fg = c.amber, underline = true }
+hl.ModeMsg      = { fg = c.fg }
+hl.MsgArea      = { fg = c.fg_soft }
+hl.MoreMsg      = { fg = c.jade }
+hl.Question     = { fg = c.sky }
+hl.WarningMsg   = { fg = c.amber }
+hl.ErrorMsg     = { fg = c.rose }
 
--- Treesitter Highlights
-hl["@variable"] = { fg = colors.fg }
-hl["@variable.builtin"] = { fg = colors.teal }
-hl["@variable.parameter"] = { fg = colors.fg }
-hl["@member"] = { fg = colors.fg }
-hl["@field"] = { fg = colors.fg }
-hl["@property"] = { fg = colors.fg }
-hl["@constructor"] = { fg = colors.teal }
-hl["@keyword"] = { fg = colors.purple }
-hl["@keyword.function"] = { fg = colors.purple }
-hl["@keyword.operator"] = { fg = colors.magenta }
-hl["@keyword.return"] = { fg = colors.purple }
-hl["@function"] = { fg = colors.cyan }
-hl["@function.builtin"] = { fg = colors.cyan }
-hl["@function.method"] = { fg = colors.cyan }
-hl["@string"] = { fg = colors.green }
-hl["@number"] = { fg = colors.orange }
-hl["@boolean"] = { fg = colors.orange }
-hl["@type"] = { fg = colors.teal }
-hl["@type.builtin"] = { fg = colors.teal }
-hl["@constant"] = { fg = colors.yellow }
-hl["@constant.builtin"] = { fg = colors.orange }
-hl["@operator"] = { fg = colors.magenta }
-hl["@punctuation.delimiter"] = { fg = colors.fg_muted }
-hl["@punctuation.bracket"] = { fg = colors.fg_muted }
-hl["@tag"] = { fg = colors.red }
-hl["@tag.attribute"] = { fg = colors.yellow }
-hl["@tag.delimiter"] = { fg = colors.fg_muted }
-hl["@label"] = { fg = colors.purple }
+hl.VertSplit    = { fg = c.border }
+hl.WinSeparator = { fg = c.border }
+hl.ColorColumn  = { bg = c.bg_deep }
+hl.Conceal      = { fg = c.fg_muted }
+hl.EndOfBuffer  = { fg = c.fg_ghost }
+hl.SignColumn    = { bg = c.bg }
 
--- Diagnostics (Soft alert colors)
-hl.DiagnosticError = { fg = colors.red }
-hl.DiagnosticWarn = { fg = colors.orange }
-hl.DiagnosticInfo = { fg = colors.cyan }
-hl.DiagnosticHint = { fg = colors.teal }
+hl.Folded       = { fg = c.fg_muted, bg = c.bg_raised }
+hl.FoldColumn   = { fg = c.fg_faint, bg = c.bg }
+hl.Directory    = { fg = c.sky }
+hl.Title        = { fg = c.amber }
+hl.SpecialKey   = { fg = c.fg_ghost }
+hl.NonText      = { fg = c.fg_ghost }
+hl.Whitespace   = { fg = c.fg_ghost }
+hl.WinBar       = { fg = c.fg_soft, bg = c.bg }
+hl.WinBarNC     = { fg = c.fg_muted, bg = c.bg_deep }
 
-hl.DiagnosticUnderlineError = { underline = true, sp = colors.red }
-hl.DiagnosticUnderlineWarn = { underline = true, sp = colors.orange }
-hl.DiagnosticUnderlineInfo = { underline = true, sp = colors.cyan }
-hl.DiagnosticUnderlineHint = { underline = true, sp = colors.teal }
+-- ── Completion Menu (Pmenu) ──
+hl.Pmenu        = { fg = c.fg, bg = c.bg_surface }
+hl.PmenuSel     = { fg = c.fg, bg = c.bg_overlay }
+hl.PmenuKind    = { fg = c.lilac, bg = c.bg_surface }
+hl.PmenuKindSel = { fg = c.lilac, bg = c.bg_overlay }
+hl.PmenuExtra   = { fg = c.fg_muted, bg = c.bg_surface }
+hl.PmenuExtraSel = { fg = c.fg_soft, bg = c.bg_overlay }
+hl.PmenuSbar    = { bg = c.bg_deep }
+hl.PmenuThumb   = { bg = c.border }
+hl.WildMenu     = { fg = c.fg, bg = c.bg_overlay }
 
--- Git Diffs (Soft, low-fatigue highlights)
-hl.DiffAdd = { fg = colors.green, bg = "#17271b" }
-hl.DiffChange = { fg = colors.blue, bg = "#172233" }
-hl.DiffDelete = { fg = colors.red, bg = "#2f171c" }
-hl.DiffText = { fg = colors.fg, bg = "#25374e" }
+-- ── Statusline & Tabline ──
+hl.StatusLine   = { fg = c.fg_soft, bg = c.bg_deep }
+hl.StatusLineNC = { fg = c.fg_faint, bg = c.bg_deep }
+hl.TabLine      = { fg = c.fg_muted, bg = c.bg_deep }
+hl.TabLineSel   = { fg = c.fg, bg = c.bg }
+hl.TabLineFill  = { bg = c.bg_deep }
 
--- Neo-tree
-hl.NeoTreeDirectoryName = { fg = colors.fg_muted }
-hl.NeoTreeDirectoryIcon = { fg = colors.blue }
-hl.NeoTreeRootName = { fg = colors.yellow, bold = true }
-hl.NeoTreeFileName = { fg = colors.fg }
-hl.NeoTreeSymbolicLinkTarget = { fg = colors.teal }
+-- ═══════════════════════════════════════════════════════════
+-- SYNTAX  (vim builtin groups)
+-- ═══════════════════════════════════════════════════════════
 
--- Telescope
-hl.TelescopeBorder = { fg = colors.border, bg = colors.bg_float }
-hl.TelescopeNormal = { fg = colors.fg, bg = colors.bg_float }
-hl.TelescopeSelection = { fg = colors.fg, bg = colors.bg_visual, bold = true }
+hl.Comment      = { fg = c.fg_faint }
+hl.Constant     = { fg = c.coral }
+hl.String       = { fg = c.sage }
+hl.Character    = { fg = c.sage }
+hl.Number       = { fg = c.coral }
+hl.Boolean      = { fg = c.coral }
+hl.Float        = { fg = c.coral }
 
--- Blink.cmp
-hl.BlinkCmpMenu = { fg = colors.fg, bg = colors.bg_float }
-hl.BlinkCmpMenuBorder = { fg = colors.border, bg = colors.bg_float }
-hl.BlinkCmpDoc = { fg = colors.fg, bg = colors.bg_float }
-hl.BlinkCmpDocBorder = { fg = colors.border, bg = colors.bg_float }
-hl.BlinkCmpSignatureHelp = { fg = colors.fg, bg = colors.bg_float }
-hl.BlinkCmpSignatureHelpBorder = { fg = colors.border, bg = colors.bg_float }
+hl.Identifier   = { fg = c.fg }
+hl.Function     = { fg = c.sky }
 
--- Delimiters & Invisible characters (Subdued to prevent distraction)
-hl.NonText = { fg = "#202631" }
-hl.Whitespace = { fg = "#202631" }
-hl.SpecialKey = { fg = "#202631" }
+hl.Statement    = { fg = c.lilac }
+hl.Conditional  = { fg = c.lilac }
+hl.Repeat       = { fg = c.lilac }
+hl.Label        = { fg = c.lilac }
+hl.Operator     = { fg = c.mauve }
+hl.Keyword      = { fg = c.lilac }
+hl.Exception    = { fg = c.lilac }
 
--- Apply highlights
+hl.PreProc      = { fg = c.lilac }
+hl.Include      = { fg = c.lilac }
+hl.Define       = { fg = c.lilac }
+hl.Macro        = { fg = c.coral }
+hl.PreCondit    = { fg = c.lilac }
+
+hl.Type         = { fg = c.jade }
+hl.StorageClass = { fg = c.lilac }
+hl.Structure    = { fg = c.jade }
+hl.Typedef      = { fg = c.jade }
+
+hl.Special      = { fg = c.amber }
+hl.SpecialChar  = { fg = c.coral }
+hl.Tag          = { fg = c.rose }
+hl.Delimiter    = { fg = c.fg_muted }
+hl.SpecialComment = { fg = c.fg_muted }
+hl.Debug        = { fg = c.rose }
+
+hl.Underlined   = { fg = c.sky, underline = true }
+hl.Ignore       = { fg = c.fg_faint }
+hl.Error        = { fg = c.rose }
+hl.Todo         = { fg = c.amber, bg = c.bg_raised }
+
+-- ═══════════════════════════════════════════════════════════
+-- TREESITTER
+-- ═══════════════════════════════════════════════════════════
+
+-- Identifiers
+hl["@variable"]                = { fg = c.fg }
+hl["@variable.builtin"]        = { fg = c.jade }
+hl["@variable.parameter"]      = { fg = c.fg_soft }
+hl["@variable.parameter.builtin"] = { fg = c.fg_soft }
+hl["@variable.member"]         = { fg = c.fg }
+
+-- Constants
+hl["@constant"]                = { fg = c.amber }
+hl["@constant.builtin"]        = { fg = c.coral }
+hl["@constant.macro"]          = { fg = c.coral }
+
+-- Modules / Namespaces
+hl["@module"]                  = { fg = c.fg_soft }
+hl["@module.builtin"]          = { fg = c.jade }
+
+-- Strings
+hl["@string"]                  = { fg = c.sage }
+hl["@string.documentation"]    = { fg = c.sage }
+hl["@string.regex"]            = { fg = c.mauve }
+hl["@string.escape"]           = { fg = c.coral }
+hl["@string.special"]          = { fg = c.mauve }
+hl["@string.special.symbol"]   = { fg = c.amber }
+hl["@string.special.url"]      = { fg = c.sky, underline = true }
+hl["@string.special.path"]     = { fg = c.sky }
+
+-- Numbers & Booleans
+hl["@number"]                  = { fg = c.coral }
+hl["@number.float"]            = { fg = c.coral }
+hl["@boolean"]                 = { fg = c.coral }
+hl["@character"]               = { fg = c.sage }
+hl["@character.special"]       = { fg = c.coral }
+
+-- Types
+hl["@type"]                    = { fg = c.jade }
+hl["@type.builtin"]            = { fg = c.jade }
+hl["@type.definition"]         = { fg = c.jade }
+hl["@type.qualifier"]          = { fg = c.lilac }
+hl["@attribute"]               = { fg = c.amber }
+hl["@attribute.builtin"]       = { fg = c.amber }
+
+-- Functions
+hl["@function"]                = { fg = c.sky }
+hl["@function.builtin"]        = { fg = c.sky }
+hl["@function.call"]           = { fg = c.sky }
+hl["@function.macro"]          = { fg = c.coral }
+hl["@function.method"]         = { fg = c.sky }
+hl["@function.method.call"]    = { fg = c.sky }
+hl["@constructor"]             = { fg = c.jade }
+
+-- Keywords
+hl["@keyword"]                 = { fg = c.lilac }
+hl["@keyword.coroutine"]       = { fg = c.lilac }
+hl["@keyword.function"]        = { fg = c.lilac }
+hl["@keyword.operator"]        = { fg = c.mauve }
+hl["@keyword.import"]          = { fg = c.lilac }
+hl["@keyword.type"]            = { fg = c.lilac }
+hl["@keyword.modifier"]        = { fg = c.lilac }
+hl["@keyword.repeat"]          = { fg = c.lilac }
+hl["@keyword.return"]          = { fg = c.lilac }
+hl["@keyword.debug"]           = { fg = c.rose }
+hl["@keyword.exception"]       = { fg = c.lilac }
+hl["@keyword.conditional"]     = { fg = c.lilac }
+hl["@keyword.conditional.ternary"] = { fg = c.mauve }
+hl["@keyword.directive"]       = { fg = c.lilac }
+hl["@keyword.directive.define"] = { fg = c.lilac }
+
+-- Operators & Punctuation
+hl["@operator"]                = { fg = c.mauve }
+hl["@punctuation.delimiter"]   = { fg = c.fg_muted }
+hl["@punctuation.bracket"]     = { fg = c.fg_soft }
+hl["@punctuation.special"]     = { fg = c.mauve }
+
+-- Comments
+hl["@comment"]                 = { fg = c.fg_faint }
+hl["@comment.documentation"]   = { fg = c.fg_muted }
+hl["@comment.error"]           = { fg = c.rose }
+hl["@comment.warning"]         = { fg = c.amber }
+hl["@comment.todo"]            = { fg = c.amber }
+hl["@comment.note"]            = { fg = c.sky }
+
+-- Markup (markdown, etc.)
+
+
+hl["@markup.strikethrough"]    = { strikethrough = true }
+hl["@markup.underline"]        = { underline = true }
+hl["@markup.heading"]          = { fg = c.amber }
+hl["@markup.heading.1"]        = { fg = c.amber }
+hl["@markup.heading.2"]        = { fg = c.sky }
+hl["@markup.heading.3"]        = { fg = c.jade }
+hl["@markup.heading.4"]        = { fg = c.lilac }
+hl["@markup.heading.5"]        = { fg = c.mauve }
+hl["@markup.heading.6"]        = { fg = c.fg_soft }
+hl["@markup.quote"]            = { fg = c.fg_muted }
+hl["@markup.math"]             = { fg = c.coral }
+hl["@markup.link"]             = { fg = c.sky, underline = true }
+hl["@markup.link.label"]       = { fg = c.sky }
+hl["@markup.link.url"]         = { fg = c.fg_muted, underline = true }
+hl["@markup.raw"]              = { fg = c.sage }
+hl["@markup.raw.block"]        = { fg = c.fg }
+hl["@markup.list"]             = { fg = c.mauve }
+hl["@markup.list.checked"]     = { fg = c.jade }
+hl["@markup.list.unchecked"]   = { fg = c.fg_muted }
+
+-- Tags (HTML / JSX)
+hl["@tag"]                     = { fg = c.rose }
+hl["@tag.builtin"]             = { fg = c.rose }
+hl["@tag.attribute"]           = { fg = c.amber }
+hl["@tag.delimiter"]           = { fg = c.fg_muted }
+
+-- Labels
+hl["@label"]                   = { fg = c.lilac }
+
+-- ═══════════════════════════════════════════════════════════
+-- LSP SEMANTIC TOKENS
+-- ═══════════════════════════════════════════════════════════
+
+hl["@lsp.type.class"]          = { fg = c.jade }
+hl["@lsp.type.comment"]        = { link = "@comment" }
+hl["@lsp.type.decorator"]      = { fg = c.amber }
+hl["@lsp.type.enum"]           = { fg = c.jade }
+hl["@lsp.type.enumMember"]     = { fg = c.coral }
+hl["@lsp.type.function"]       = { link = "@function" }
+hl["@lsp.type.interface"]      = { fg = c.jade }
+hl["@lsp.type.keyword"]        = { link = "@keyword" }
+hl["@lsp.type.macro"]          = { link = "@function.macro" }
+hl["@lsp.type.method"]         = { link = "@function.method" }
+hl["@lsp.type.namespace"]      = { fg = c.fg_soft }
+hl["@lsp.type.number"]         = { link = "@number" }
+hl["@lsp.type.operator"]       = { link = "@operator" }
+hl["@lsp.type.parameter"]      = { link = "@variable.parameter" }
+hl["@lsp.type.property"]       = { fg = c.fg }
+hl["@lsp.type.string"]         = { link = "@string" }
+hl["@lsp.type.struct"]         = { fg = c.jade }
+hl["@lsp.type.type"]           = { link = "@type" }
+hl["@lsp.type.typeParameter"]  = { fg = c.jade }
+hl["@lsp.type.variable"]       = { link = "@variable" }
+
+hl["@lsp.mod.deprecated"]      = { strikethrough = true }
+
+
+-- ═══════════════════════════════════════════════════════════
+-- DIAGNOSTICS
+-- ═══════════════════════════════════════════════════════════
+
+hl.DiagnosticError = { fg = c.rose }
+hl.DiagnosticWarn  = { fg = c.amber }
+hl.DiagnosticInfo  = { fg = c.sky }
+hl.DiagnosticHint  = { fg = c.jade }
+hl.DiagnosticOk    = { fg = c.sage }
+
+hl.DiagnosticUnderlineError = { undercurl = true, sp = c.rose }
+hl.DiagnosticUnderlineWarn  = { undercurl = true, sp = c.amber }
+hl.DiagnosticUnderlineInfo  = { undercurl = true, sp = c.sky }
+hl.DiagnosticUnderlineHint  = { undercurl = true, sp = c.jade }
+hl.DiagnosticUnderlineOk    = { undercurl = true, sp = c.sage }
+
+hl.DiagnosticVirtualTextError = { fg = c.rose, bg = c.diag_err_bg }
+hl.DiagnosticVirtualTextWarn  = { fg = c.amber, bg = c.diag_warn_bg }
+hl.DiagnosticVirtualTextInfo  = { fg = c.sky, bg = c.diag_info_bg }
+hl.DiagnosticVirtualTextHint  = { fg = c.jade, bg = c.diag_hint_bg }
+
+hl.DiagnosticSignError = { fg = c.rose }
+hl.DiagnosticSignWarn  = { fg = c.amber }
+hl.DiagnosticSignInfo  = { fg = c.sky }
+hl.DiagnosticSignHint  = { fg = c.jade }
+
+-- ═══════════════════════════════════════════════════════════
+-- GIT  (diffs, signs, blame)
+-- ═══════════════════════════════════════════════════════════
+
+hl.DiffAdd     = { bg = c.diff_add_bg }
+hl.DiffChange  = { bg = c.diff_change_bg }
+hl.DiffDelete  = { fg = c.rose, bg = c.diff_delete_bg }
+hl.DiffText    = { bg = c.diff_text_bg }
+
+hl.Added       = { fg = c.git_add }
+hl.Changed     = { fg = c.git_change }
+hl.Removed     = { fg = c.git_delete }
+
+-- Gitsigns
+hl.GitSignsAdd    = { fg = c.git_add }
+hl.GitSignsChange = { fg = c.git_change }
+hl.GitSignsDelete = { fg = c.git_delete }
+
+-- ═══════════════════════════════════════════════════════════
+-- PLUGIN INTEGRATIONS
+-- ═══════════════════════════════════════════════════════════
+
+-- ── Neo-tree ──
+hl.NeoTreeDirectoryName  = { fg = c.fg_soft }
+hl.NeoTreeDirectoryIcon  = { fg = c.sky }
+hl.NeoTreeRootName       = { fg = c.amber }
+hl.NeoTreeFileName       = { fg = c.fg }
+hl.NeoTreeFileNameOpened = { fg = c.sky }
+hl.NeoTreeGitAdded       = { fg = c.git_add }
+hl.NeoTreeGitConflict    = { fg = c.rose }
+hl.NeoTreeGitDeleted     = { fg = c.git_delete }
+hl.NeoTreeGitModified    = { fg = c.git_change }
+hl.NeoTreeGitUntracked   = { fg = c.fg_muted }
+hl.NeoTreeIndentMarker   = { fg = c.fg_ghost }
+hl.NeoTreeSymbolicLinkTarget = { fg = c.jade }
+hl.NeoTreeNormal         = { fg = c.fg, bg = c.bg_deep }
+hl.NeoTreeNormalNC       = { fg = c.fg_soft, bg = c.bg_deep }
+hl.NeoTreeWinSeparator   = { fg = c.border, bg = c.bg_deep }
+hl.NeoTreeCursorLine     = { bg = c.bg_raised }
+
+-- ── Telescope ──
+hl.TelescopeNormal        = { fg = c.fg, bg = c.bg_surface }
+hl.TelescopeBorder        = { fg = c.border_focus, bg = c.bg_surface }
+hl.TelescopeTitle         = { fg = c.amber, bg = c.bg_surface }
+hl.TelescopePromptNormal  = { fg = c.fg, bg = c.bg_raised }
+hl.TelescopePromptBorder  = { fg = c.border_focus, bg = c.bg_raised }
+hl.TelescopePromptTitle   = { fg = c.amber, bg = c.bg_raised }
+hl.TelescopePromptPrefix  = { fg = c.sky }
+hl.TelescopePreviewNormal = { fg = c.fg, bg = c.bg_deep }
+hl.TelescopePreviewBorder = { fg = c.border, bg = c.bg_deep }
+hl.TelescopePreviewTitle  = { fg = c.amber, bg = c.bg_deep }
+hl.TelescopeResultsNormal = { fg = c.fg, bg = c.bg_surface }
+hl.TelescopeResultsBorder = { fg = c.border_focus, bg = c.bg_surface }
+hl.TelescopeSelection     = { fg = c.fg, bg = c.bg_overlay }
+hl.TelescopeSelectionCaret = { fg = c.sky }
+hl.TelescopeMatching      = { fg = c.amber }
+
+-- ── Blink.cmp ──
+hl.BlinkCmpMenu           = { fg = c.fg, bg = c.bg_surface }
+hl.BlinkCmpMenuBorder     = { fg = c.border_focus, bg = c.bg_surface }
+hl.BlinkCmpMenuSelection  = { bg = c.bg_overlay }
+hl.BlinkCmpDoc            = { fg = c.fg, bg = c.bg_surface }
+hl.BlinkCmpDocBorder      = { fg = c.border_focus, bg = c.bg_surface }
+hl.BlinkCmpDocSeparator   = { fg = c.border, bg = c.bg_surface }
+hl.BlinkCmpSignatureHelp       = { fg = c.fg, bg = c.bg_surface }
+hl.BlinkCmpSignatureHelpBorder = { fg = c.border_focus, bg = c.bg_surface }
+hl.BlinkCmpLabel          = { fg = c.fg }
+hl.BlinkCmpLabelMatch     = { fg = c.amber }
+hl.BlinkCmpLabelDeprecated = { fg = c.fg_muted, strikethrough = true }
+hl.BlinkCmpKind           = { fg = c.lilac }
+hl.BlinkCmpSource         = { fg = c.fg_muted }
+
+-- Completion item kinds
+hl.BlinkCmpKindText          = { fg = c.fg_soft }
+hl.BlinkCmpKindMethod        = { fg = c.sky }
+hl.BlinkCmpKindFunction      = { fg = c.sky }
+hl.BlinkCmpKindConstructor   = { fg = c.jade }
+hl.BlinkCmpKindField         = { fg = c.fg }
+hl.BlinkCmpKindVariable      = { fg = c.steel }
+hl.BlinkCmpKindClass         = { fg = c.jade }
+hl.BlinkCmpKindInterface     = { fg = c.jade }
+hl.BlinkCmpKindModule        = { fg = c.fg_soft }
+hl.BlinkCmpKindProperty      = { fg = c.fg }
+hl.BlinkCmpKindUnit          = { fg = c.coral }
+hl.BlinkCmpKindValue         = { fg = c.coral }
+hl.BlinkCmpKindEnum          = { fg = c.jade }
+hl.BlinkCmpKindKeyword       = { fg = c.lilac }
+hl.BlinkCmpKindSnippet       = { fg = c.mauve }
+hl.BlinkCmpKindColor         = { fg = c.amber }
+hl.BlinkCmpKindFile          = { fg = c.fg }
+hl.BlinkCmpKindFolder        = { fg = c.sky }
+hl.BlinkCmpKindEvent         = { fg = c.amber }
+hl.BlinkCmpKindOperator      = { fg = c.mauve }
+hl.BlinkCmpKindTypeParameter = { fg = c.jade }
+
+-- ── Indent Blankline ──
+hl.IblIndent   = { fg = "#3a3a3a" }
+hl.IblScope    = { fg = "#626262" }
+hl.IblWhitespace = { fg = c.fg_ghost }
+
+-- ── Lazy.nvim ──
+hl.LazyH1       = { fg = c.bg, bg = c.amber }
+hl.LazyH2       = { fg = c.amber }
+hl.LazyButton   = { fg = c.fg, bg = c.bg_raised }
+hl.LazyButtonActive = { fg = c.bg, bg = c.sky }
+hl.LazySpecial  = { fg = c.jade }
+hl.LazyComment  = { fg = c.fg_faint }
+
+-- ── Mason ──
+hl.MasonNormal  = { fg = c.fg, bg = c.bg_surface }
+hl.MasonHeader  = { fg = c.bg, bg = c.amber }
+hl.MasonHighlight = { fg = c.sky }
+hl.MasonHighlightBlock = { fg = c.bg, bg = c.sky }
+hl.MasonHighlightBlockBold = { fg = c.bg, bg = c.sky }
+hl.MasonMutedBlock = { fg = c.fg_muted, bg = c.bg_raised }
+
+-- ── Noice / Notify ──
+hl.NoiceCmdlinePopup       = { fg = c.fg, bg = c.bg_surface }
+hl.NoiceCmdlinePopupBorder = { fg = c.border_focus, bg = c.bg_surface }
+hl.NoiceCmdlineIcon        = { fg = c.sky }
+hl.NotifyERRORBorder = { fg = c.rose }
+hl.NotifyWARNBorder  = { fg = c.amber }
+hl.NotifyINFOBorder  = { fg = c.sky }
+hl.NotifyDEBUGBorder = { fg = c.fg_muted }
+hl.NotifyTRACEBorder = { fg = c.lilac }
+hl.NotifyERRORIcon   = { fg = c.rose }
+hl.NotifyWARNIcon    = { fg = c.amber }
+hl.NotifyINFOIcon    = { fg = c.sky }
+hl.NotifyDEBUGIcon   = { fg = c.fg_muted }
+hl.NotifyTRACEIcon   = { fg = c.lilac }
+hl.NotifyERRORTitle  = { fg = c.rose }
+hl.NotifyWARNTitle   = { fg = c.amber }
+hl.NotifyINFOTitle   = { fg = c.sky }
+hl.NotifyDEBUGTitle  = { fg = c.fg_muted }
+hl.NotifyTRACETitle  = { fg = c.lilac }
+
+-- ── Which-Key ──
+hl.WhichKey          = { fg = c.sky }
+hl.WhichKeyGroup     = { fg = c.lilac }
+hl.WhichKeySeparator = { fg = c.fg_faint }
+hl.WhichKeyDesc      = { fg = c.fg_soft }
+hl.WhichKeyFloat     = { bg = c.bg_surface }
+hl.WhichKeyBorder    = { fg = c.border_focus, bg = c.bg_surface }
+hl.WhichKeyValue     = { fg = c.fg_muted }
+
+-- ── Flash.nvim ──
+hl.FlashLabel   = { fg = c.bg, bg = c.amber }
+hl.FlashCurrent = { fg = c.bg, bg = c.sky }
+hl.FlashMatch   = { fg = c.fg, bg = c.bg_accent }
+
+-- ── Mini (various) ──
+hl.MiniIndentscopeSymbol = { fg = c.border_focus }
+
+-- ── Trouble ──
+hl.TroubleNormal     = { fg = c.fg, bg = c.bg_surface }
+hl.TroubleNormalNC   = { fg = c.fg_soft, bg = c.bg_surface }
+
+-- ── Snacks ──
+hl.SnacksNormal      = { fg = c.fg, bg = c.bg }
+hl.SnacksWinBar      = { fg = c.fg_soft, bg = c.bg }
+
+-- ═══════════════════════════════════════════════════════════
+-- APPLY
+-- ═══════════════════════════════════════════════════════════
+
 vim.cmd("hi clear")
 if vim.fn.exists("syntax_on") then
   vim.cmd("syntax reset")
 end
 
 vim.g.colors_name = "antigravity"
+vim.o.termguicolors = true
 
 for group, settings in pairs(hl) do
   vim.api.nvim_set_hl(0, group, settings)

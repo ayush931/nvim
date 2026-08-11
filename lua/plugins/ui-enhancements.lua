@@ -16,10 +16,13 @@ return {
       indent = {
         char = "│",
         tab_char = "│",
+        highlight = "IblIndent",
       },
       scope = {
+        enabled = true,
         show_start = false,
         show_end = false,
+        highlight = "IblScope",
       },
       exclude = {
         filetypes = {

@@ -59,6 +59,7 @@ return {
       opts.extensions.live_grep_args = {
         auto_quoting = true,
       }
+      return opts
     end,
     config = function(_, opts)
       local telescope = require("telescope")

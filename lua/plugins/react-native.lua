@@ -36,6 +36,7 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
         vim.list_extend(opts.ensure_installed,
             {"tsx", "typescript", "javascript", "json", "xml", "kotlin", "swift", "groovy" -- for android/build.gradle
             })
+        return opts
     end
 }, -- LSP: ESLint for RN linting (vtsls is configured in completion.lua)
 {
@@ -50,10 +51,10 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
     "folke/which-key.nvim",
     opts = {
         spec = {{
-            "<leader>r",
+            "<leader>R",
             group = "react-native"
         }, {
-            "<leader>rs",
+            "<leader>Rs",
             function()
                 require("toggleterm.terminal").Terminal:new({
                     cmd = "npx react-native start",
@@ -63,7 +64,7 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
             end,
             desc = "Start Metro"
         }, {
-            "<leader>ra",
+            "<leader>Ra",
             function()
                 require("toggleterm.terminal").Terminal:new({
                     cmd = "npx react-native run-android",
@@ -73,7 +74,7 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
             end,
             desc = "Run Android"
         }, {
-            "<leader>ri",
+            "<leader>Ri",
             function()
                 require("toggleterm.terminal").Terminal:new({
                     cmd = "npx react-native run-ios",
@@ -83,7 +84,7 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
             end,
             desc = "Run iOS"
         }, {
-            "<leader>rl",
+            "<leader>Rl",
             function()
                 require("toggleterm.terminal").Terminal:new({
                     cmd = "npx react-native log-android",
@@ -94,11 +95,11 @@ return { -- React Native DAP adapter (attach to Metro / Hermes)
             end,
             desc = "Logcat (Android)"
         }, {
-            "<leader>rd",
+            "<leader>Rd",
             "<cmd>!adb shell input keyevent 82<cr>",
             desc = "Open Dev Menu (Android)"
         }, {
-            "<leader>rr",
+            "<leader>Rr",
             "<cmd>!adb shell input text 'RR'<cr>",
             desc = "Reload (Android)"
         }}

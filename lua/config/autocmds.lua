@@ -3,9 +3,8 @@
 --
 -- Add any additional autocmds here
 -- with `vim.api.nvim_create_autocmd`
---
--- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
--- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
+
+-- Filetype detection for Prisma
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     pattern = "*.prisma",
     callback = function()
@@ -13,23 +12,32 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     end
 })
 
-local four_space_indent = vim.api.nvim_create_augroup("four_space_indent", { clear = true })
-vim.api.nvim_create_autocmd({ "BufEnter", "FileType", "BufWritePre" }, {
-    group = four_space_indent,
-    pattern = "*",
-    callback = function()
-        vim.bo.tabstop = 4
-        vim.bo.shiftwidth = 4
-        vim.bo.softtabstop = 4
-        vim.bo.expandtab = true
+-- Auto-create missing parent directories when saving a new file
+vim.api.nvim_create_autocmd("BufWritePre", {
+    callback = function(event)
+        if not event.file or event.file == "" or event.file:match("^%w%w+:[\\/][\\/]") then
+            return
+        end
+        local dir = vim.fn.fnamemodify(event.file, ":p:h")
+        if vim.fn.isdirectory(dir) == 0 then
+            vim.fn.mkdir(dir, "p")
+        end
     end,
 })
 
+-- Style comments with italic and softer grey tone
+vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
+    callback = function()
+        vim.api.nvim_set_hl(0, "Comment", { italic = true, fg = "#5c6370" })
+    end,
+})
+
+
 -- Auto save files when leaving insert mode or losing focus
-vim.api.nvim_create_autocmd({"InsertLeave", "TextChanged", "FocusLost"}, {
+vim.api.nvim_create_autocmd({"InsertLeave", "FocusLost"}, {
     pattern = "*",
     callback = function()
-        if vim.bo.modified and vim.bo.buftype == "" and vim.fn.expand("%") ~= "" then
+        if vim.bo.modified and vim.bo.buftype == "" and not vim.bo.readonly and vim.bo.modifiable and vim.fn.expand("%") ~= "" then
             vim.cmd("silent! write")
         end
     end
@@ -70,26 +78,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 })
 
--- Force line wrap for diagnostic popups
-vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-        vim.api.nvim_create_autocmd("CursorHold", {
-            buffer = args.buf,
-            callback = function()
-                local _, winid = vim.diagnostic.open_float(nil, {
-                    focusable = false,
-                    close_events = {"CursorMoved", "CursorMovedI", "BufLeave", "InsertEnter"},
-                    border = "rounded",
-                    source = "always",
-                    prefix = " ",
-                    scope = "line"
-                })
-                if winid then
-                    vim.wo[winid].wrap = true
-                end
-            end
-        })
-    end
+-- Ensure comments do not automatically continue on new lines for any filetype (Enter or o/O)
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "*",
+    callback = function()
+        vim.opt_local.formatoptions:remove({ "r", "o", "c" })
+    end,
 })
 
 -- Ensure floating windows for diagnostics wrap text

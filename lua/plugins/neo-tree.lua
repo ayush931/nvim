@@ -16,13 +16,14 @@ return {
 
   {
     "nvim-neo-tree/neo-tree.nvim",
+    cmd = "Neotree",
     keys = {
       {
         "<leader>e",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
+          require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
         end,
-        desc = "Explorer NeoTree (cwd)",
+        desc = "Explorer NeoTree (Root Dir)",
       },
       {
         "<leader>E",
@@ -34,9 +35,9 @@ return {
       {
         "<leader>fe",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
+          require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
         end,
-        desc = "Explorer NeoTree (cwd)",
+        desc = "Explorer NeoTree (Root Dir)",
       },
       {
         "<leader>fE",
@@ -63,45 +64,31 @@ return {
     opts = {
       default_component_configs = {
         indent = {
-          indent_size = 4,
-          padding = 0,
-          expander_collapsed = ">",
-          expander_expanded = "v",
+          indent_size = 2,
+          padding = 1,
           with_expanders = true,
-        },
-        icon = {
-          folder_closed = "",
-          folder_open = "",
-          folder_empty = "",
-          folder_empty_open = "",
-        },
-        git_status = {
-          symbols = {
-            added = "",
-            deleted = "",
-            modified = "",
-            renamed = "",
-            untracked = "",
-            ignored = "",
-            unstaged = "",
-            staged = "",
-            conflict = "",
-          },
         },
       },
       filesystem = {
-        bind_to_cwd = false, -- Don't sync neo-tree root with cwd changes
+        bind_to_cwd = false,
+        use_libuv_file_watcher = true,
         filtered_items = {
-          visible = true, -- Show hidden files by default
+          visible = true,
           hide_dotfiles = false,
           hide_gitignored = false,
-          hide_hidden = false, -- Windows-specific hidden files
+          hide_hidden = false,
         },
         follow_current_file = {
-          enabled = true, -- Still highlight/expand to show the current file
+          enabled = true,
           leave_dirs_open = false,
+        },
+        window = {
+          mappings = {
+            ["<space>"] = "none",
+          },
         },
       },
     },
   },
 }
+

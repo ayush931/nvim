@@ -11,12 +11,24 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
         -- Formatters / linters
         "black", "goimports", "isort", "prettierd", "shfmt", "stylua", "sqlfluff", -- DAP / debuggers
         "debugpy", "delve", "js-debug-adapter"})
+        return opts
     end
 }, {
     "neovim/nvim-lspconfig",
     opts = {
         servers = {
             bashls = {},
+            clangd = {
+                cmd = {
+                    "clangd",
+                    "--background-index",
+                    "--clang-tidy",
+                    "--header-insertion=iwyu",
+                    "--completion-style=detailed",
+                    "--function-arg-placeholders",
+                    "--fallback-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never}",
+                },
+            },
             dockerls = {},
             docker_compose_language_service = {},
             gopls = {
@@ -104,6 +116,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
             end
         end
         opts.ensure_installed = filtered
+        return opts
     end
 }, {
     "nvim-treesitter/nvim-treesitter",
@@ -113,6 +126,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
             {"bash", "c", "cpp", "css", "csv", "dockerfile", "go", "graphql", "html", "javascript", "jsdoc", "json",
              "json5", "jsonc", "lua", "markdown", "markdown_inline", "python", "regex", "rust", "sql", "terraform",
              "toml", "tsx", "typescript", "vim", "yaml"})
+        return opts
     end
 }, -- Better formatting defaults for polyglot repos
 {

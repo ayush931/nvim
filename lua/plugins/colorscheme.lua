@@ -6,12 +6,11 @@ return {
     config = function()
       require("vscode").setup({
         style = "dark",
-        -- Enable transparent background if you prefer
-        -- transparent = true,
+        transparent = false,
         -- Enable italic comment
-        italic_comments = true,
+        italic_comments = false,
         -- Disable nvim-tree background color
-        disable_nvimtree_bg = true,
+        disable_nvimtree_bg = false,
         -- Override colors or highlights
         group_overrides = {
           -- Example: ['@variable.builtin.python'] = { fg = '#569CD6' },
@@ -21,3 +20,5 @@ return {
     end,
   },
 }
+
+

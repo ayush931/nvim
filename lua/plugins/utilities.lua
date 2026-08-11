@@ -39,9 +39,10 @@ return { -- ── Surround: add/change/delete surrounding pairs ─────
         }
     }
 },
- -- ── Comment box: create pretty comment headers ─────────────────
+  -- ── Comment box: create pretty comment headers ─────────────────
 {
     "LudoPinelli/comment-box.nvim",
+    enabled = false,
     event = "VeryLazy",
     keys = {{
         "<leader>cb",

@@ -47,33 +47,33 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                             enabled = "always"
                         },
                         suggest = {
-                            completeFunctionCalls = true,
+                            completeFunctionCalls = false,
                             autoImports = true,
                             classMemberSnippets = {
-                                enabled = true
+                                enabled = false
                             },
                             objectLiteralMethodSnippets = {
-                                enabled = true
+                                enabled = false
                             }
                         },
                         inlayHints = {
                             parameterNames = {
-                                enabled = "all"
+                                enabled = "none"
                             },
                             parameterTypes = {
-                                enabled = true
+                                enabled = false
                             },
                             variableTypes = {
                                 enabled = false
                             },
                             propertyDeclarationTypes = {
-                                enabled = true
+                                enabled = false
                             },
                             functionLikeReturnTypes = {
-                                enabled = true
+                                enabled = false
                             },
                             enumMemberValues = {
-                                enabled = true
+                                enabled = false
                             }
                         },
                         preferences = {
@@ -90,27 +90,27 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                             enabled = "always"
                         },
                         suggest = {
-                            completeFunctionCalls = true,
+                            completeFunctionCalls = false,
                             autoImports = true
                         },
                         inlayHints = {
                             parameterNames = {
-                                enabled = "all"
+                                enabled = "none"
                             },
                             parameterTypes = {
-                                enabled = true
+                                enabled = false
                             },
                             variableTypes = {
                                 enabled = false
                             },
                             propertyDeclarationTypes = {
-                                enabled = true
+                                enabled = false
                             },
                             functionLikeReturnTypes = {
-                                enabled = true
+                                enabled = false
                             },
                             enumMemberValues = {
-                                enabled = true
+                                enabled = false
                             }
                         }
                     },
@@ -191,6 +191,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
         opts.ensure_installed = opts.ensure_installed or {}
         vim.list_extend(opts.ensure_installed,
             {"vtsls", "emmet-language-server", "tailwindcss-language-server", "css-lsp", "eslint-lsp", "prettier"})
+        return opts
     end
 }, -- Formatting with Prettier (like VS Code default formatter)
 {
@@ -255,12 +256,23 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
             }
         }
     }
-}, -- Completion engine: VS Code-like behavior
+}, -- Clean, non-intrusive completion engine (blink.cmp)
 {
     "saghen/blink.cmp",
     opts = {
+        keymap = {
+            preset = "super-tab",
+            ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+            ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+            ["<CR>"] = { "accept", "fallback" },
+            ["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
+        },
         completion = {
-            -- Trigger completion immediately as you type (like VS Code)
+            accept = {
+                auto_brackets = {
+                    enabled = true
+                }
+            },
             keyword = {
                 range = "full"
             },
@@ -271,15 +283,16 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                 show_on_accept_on_trigger_character = true
             },
             list = {
-                -- Preselect first item like VS Code
                 selection = {
-                    preselect = true,
+                    preselect = false,
                     auto_insert = false
                 }
             },
-            -- Show completion menu automatically (like VS Code)
+            -- Clean, rounded completion menu with max height limit
             menu = {
                 auto_show = true,
+                border = "rounded",
+                max_height = 10,
                 draw = {
                     columns = {{"kind_icon"}, {
                         "label",
@@ -288,25 +301,30 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                     }, {"source_name"}}
                 }
             },
-            -- Show documentation popup alongside completion (like VS Code)
+            -- Don't auto-popup huge documentation box on every single keypress
             documentation = {
-                auto_show = true,
-                auto_show_delay_ms = 100
+                auto_show = false,
+                auto_show_delay_ms = 500,
+                window = {
+                    border = "rounded"
+                }
             },
-            -- Ghost text (inline suggestion preview like VS Code)
+            -- Disable ghost text (inline grey preview text in front of cursor)
             ghost_text = {
-                enabled = true
+                enabled = false
             }
         },
-        -- Show function signatures as you type (like VS Code)
+        -- Disable automatic function signature popup when typing functions like push_back(
         signature = {
-            enabled = true
+            enabled = false,
+            window = {
+                border = "rounded"
+            }
         },
         sources = {
             default = {"lsp", "path", "snippets", "buffer"},
             providers = {
                 lsp = {
-                    -- Don't wait — show LSP results as soon as they arrive
                     async = true,
                     score_offset = 100
                 },
@@ -324,31 +342,10 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
         }
     }
 }, -- Snippets: friendly-snippets gives VS Code-like snippet library
-{"rafamadriz/friendly-snippets"}, -- nvim-cmp sources for LSP, buffer, path, cmdline
-{
-    "hrsh7th/nvim-cmp",
-    event = {"InsertEnter", "CmdlineEnter"},
-    dependencies = {"hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "hrsh7th/cmp-cmdline"},
-    config = function()
-        local cmp = require("cmp")
-        cmp.setup({
-            -- Add your nvim-cmp config here or leave empty for defaults
-        })
-        -- Cmdline completion
-        cmp.setup.cmdline(":", {
-            sources = {{
-                name = "cmdline"
-            }}
-        })
-        cmp.setup.cmdline("/", {
-            sources = {{
-                name = "buffer"
-            }}
-        })
-    end
-}, -- Inline function signature help
+{"rafamadriz/friendly-snippets"},
+-- Disable separate lsp_signature plugin to avoid double floating windows (blink.cmp handles signature cleanly)
 {
     "ray-x/lsp_signature.nvim",
-    event = "LspAttach",
-    opts = {}
+    enabled = false
 }}
+

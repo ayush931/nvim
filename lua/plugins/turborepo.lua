@@ -3,26 +3,26 @@ return { -- Turborepo keymaps
     "folke/which-key.nvim",
     opts = {
         spec = {{
-            "<leader>t",
+            "<leader>T",
             group = "turbo"
         }, {
-            "<leader>tt",
+            "<leader>Tt",
             "<cmd>!pnpm turbo run dev<cr>",
             desc = "Turbo Dev"
         }, {
-            "<leader>tb",
+            "<leader>Tb",
             "<cmd>!pnpm turbo run build<cr>",
             desc = "Turbo Build"
         }, {
-            "<leader>tl",
+            "<leader>Tl",
             "<cmd>!pnpm turbo run lint<cr>",
             desc = "Turbo Lint"
         }, {
-            "<leader>tc",
+            "<leader>Tc",
             "<cmd>!pnpm turbo run check-types<cr>",
             desc = "Turbo Type Check"
         }, {
-            "<leader>te",
+            "<leader>Te",
             "<cmd>!pnpm turbo run test<cr>",
             desc = "Turbo Test"
         }}
@@ -40,7 +40,7 @@ return { -- Turborepo keymaps
         end,
         desc = "Find Files (packages/apps)"
     }, {
-        "<leader>sw",
+        "<leader>sp",
         function()
             require("telescope.builtin").live_grep({
                 prompt_title = "Grep in Workspace Packages",

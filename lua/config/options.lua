@@ -2,12 +2,23 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
+-- Disable unused providers to avoid healthcheck warnings & speed startup
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
+
 -- Use LSP root first (respects tsconfig.json / package.json per-package),
 -- then monorepo markers, then CWD as fallback
 vim.g.root_spec = { "lsp", { ".git", "turbo.json" }, "cwd" }
 
 -- Set cursor to block in all modes (including insert mode)
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:block,r-cr-o:block"
+vim.opt.guifont = "Fira Code:h10.5"
+
+
+
+
 
 -- Auto-save related options
 vim.opt.autowrite = true
@@ -60,9 +71,31 @@ vim.opt.linebreak = true
 vim.opt.breakindent = true
 vim.opt.showbreak = "↳ "
 
+-- Do not automatically insert comment leader on next line when pressing Enter or o/O
+vim.opt.formatoptions:remove({ "c", "r", "o" })
+
+-- Ensure selection does not switch to select/visual mode on completion
+vim.opt.selectmode = ""
+
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 4
 vim.opt.expandtab = true
 
 vim.opt.showtabline = 0
+
+-- Auto-create missing parent directories when saving a file
+vim.api.nvim_create_autocmd("BufWritePre", {
+    callback = function(event)
+        if not event.file or event.file == "" or event.file:match("^%w%w+:[\\/][\\/]") then
+            return
+        end
+        local dir = vim.fn.fnamemodify(event.file, ":p:h")
+        if vim.fn.isdirectory(dir) == 0 then
+            vim.fn.mkdir(dir, "p")
+        end
+    end,
+})
+
+
+

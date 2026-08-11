@@ -89,12 +89,24 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
     },
     keys = {{
         "gd",
+        "<cmd>Lspsaga goto_definition<CR>",
+        desc = "Goto Definition"
+    }, {
+        "gD",
         "<cmd>Lspsaga peek_definition<CR>",
         desc = "Peek Definition"
     }, {
-        "gD",
-        "<cmd>Lspsaga goto_definition<CR>",
-        desc = "Goto Definition"
+        "gp",
+        "<cmd>Lspsaga peek_definition<CR>",
+        desc = "Peek Definition"
+    }, {
+        "gy",
+        "<cmd>Lspsaga peek_type_definition<CR>",
+        desc = "Type Definition"
+    }, {
+        "gi",
+        "<cmd>vim.lsp.buf.implementation<CR>",
+        desc = "Goto Implementation"
     }, {
         "gr",
         "<cmd>Lspsaga finder<CR>",
@@ -102,7 +114,20 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
     }, {
         "K",
         "<cmd>Lspsaga hover_doc<CR>",
-        desc = "Hover Doc"
+        desc = "Hover Definition / Doc"
+    }, {
+        "gs",
+        "<cmd>Lspsaga signature_help<CR>",
+        desc = "Signature Help"
+    }, {
+        "<C-k>",
+        "<cmd>Lspsaga signature_help<CR>",
+        desc = "Signature Help",
+        mode = "i"
+    }, {
+        "<leader>cd",
+        "<cmd>Lspsaga peek_definition<CR>",
+        desc = "Peek Definition"
     }, {
         "<leader>ca",
         "<cmd>Lspsaga code_action<CR>",

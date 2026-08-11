@@ -25,10 +25,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end,
 })
 
--- Style comments with italic and softer grey tone
+-- Style comments with softer grey tone (no italics)
 vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
     callback = function()
-        vim.api.nvim_set_hl(0, "Comment", { italic = true, fg = "#5c6370" })
+        vim.api.nvim_set_hl(0, "Comment", { fg = "#556272" })
     end,
 })
 

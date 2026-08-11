@@ -47,7 +47,29 @@ vim.api.nvim_create_autocmd({"InsertLeave", "FocusLost"}, {
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
         local client = vim.lsp.get_client_by_id(args.data.client_id)
-        if not client or not client:supports_method("textDocument/inlayHint") then
+        if not client then
+            return
+        end
+
+        -- Ensure signature help auto-popup is suppressed for trigger characters
+        local current_handler = vim.lsp.handlers["textDocument/signatureHelp"]
+        if current_handler and not vim.g._sig_help_wrapped then
+            vim.g._sig_help_wrapped = true
+            local orig_handler = current_handler
+            vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+                if ctx and ctx.params and ctx.params.context then
+                    local kind = ctx.params.context.triggerKind
+                    if (kind == 2 or kind == 3) and not vim.g.auto_signature_help then
+                        return
+                    end
+                end
+                if orig_handler then
+                    return orig_handler(err, result, ctx, config)
+                end
+            end
+        end
+
+        if not client:supports_method("textDocument/inlayHint") then
             return
         end
 

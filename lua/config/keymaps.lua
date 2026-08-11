@@ -60,3 +60,42 @@ map("n", "gl", function()
 end, {
     desc = "Show Full Line Diagnostics & Suggestions"
 })
+
+-- Disable automatic LSP signature help popup while typing (e.g. vector, std library functions)
+vim.g.auto_signature_help = false
+
+local orig_sig_help = vim.lsp.handlers["textDocument/signatureHelp"]
+vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+    if ctx and ctx.params and ctx.params.context then
+        local kind = ctx.params.context.triggerKind
+        -- Suppress automatic triggers from typing '(' or ',' or editing (triggerKind 2 or 3)
+        if (kind == 2 or kind == 3) and not vim.g.auto_signature_help then
+            return
+        end
+    end
+    if orig_sig_help then
+        return orig_sig_help(err, result, ctx, config)
+    end
+end
+
+-- Keybinding to toggle automatic signature help popups on/off
+map("n", "<leader>us", function()
+    vim.g.auto_signature_help = not vim.g.auto_signature_help
+    local status = vim.g.auto_signature_help and "Enabled" or "Disabled"
+    vim.notify("Auto Signature Help Popup: " .. status, vim.log.levels.INFO)
+end, {
+    desc = "Toggle Auto Signature Help Popup"
+})
+
+-- Manual signature help trigger in Insert mode (<C-k>)
+map("i", "<C-k>", function()
+    local has_saga, _ = pcall(require, "lspsaga.signaturehelp")
+    if has_saga then
+        vim.cmd("Lspsaga signature_help")
+    else
+        vim.lsp.buf.signature_help()
+    end
+end, {
+    desc = "Toggle Signature Help / Definition"
+})
+

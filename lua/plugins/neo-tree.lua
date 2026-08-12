@@ -1,29 +1,13 @@
 return {
-  -- Disable snacks explorer so it doesn't conflict with neo-tree
-  {
-    "folke/snacks.nvim",
-    opts = {
-      explorer = { enabled = false },
-    },
-    keys = {
-      -- Unbind snacks explorer keys so neo-tree can use them
-      { "<leader>e", false },
-      { "<leader>E", false },
-      { "<leader>fe", false },
-      { "<leader>fE", false },
-    },
-  },
-
   {
     "nvim-neo-tree/neo-tree.nvim",
-    cmd = "Neotree",
     keys = {
       {
         "<leader>e",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
+          require("neo-tree.command").execute({ toggle = true, dir = _G.get_project_root() })
         end,
-        desc = "Explorer NeoTree (cwd)",
+        desc = "Explorer NeoTree (Root Dir)",
       },
       {
         "<leader>E",
@@ -31,34 +15,6 @@ return {
           require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
         end,
         desc = "Explorer NeoTree (cwd)",
-      },
-      {
-        "<leader>fe",
-        function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
-        end,
-        desc = "Explorer NeoTree (cwd)",
-      },
-      {
-        "<leader>fE",
-        function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
-        end,
-        desc = "Explorer NeoTree (cwd)",
-      },
-      {
-        "<leader>ge",
-        function()
-          require("neo-tree.command").execute({ source = "git_status", toggle = true })
-        end,
-        desc = "Git Explorer",
-      },
-      {
-        "<leader>be",
-        function()
-          require("neo-tree.command").execute({ source = "buffers", toggle = true })
-        end,
-        desc = "Buffer Explorer",
       },
     },
     opts = {
@@ -88,7 +44,16 @@ return {
           },
         },
       },
+      event_handlers = {
+        {
+          event = "file_added",
+          handler = function(path)
+            if vim.fn.isdirectory(path) == 0 then
+              vim.cmd("edit " .. vim.fn.fnameescape(path))
+            end
+          end,
+        },
+      },
     },
   },
 }
-

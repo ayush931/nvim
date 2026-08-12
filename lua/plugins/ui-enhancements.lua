@@ -20,9 +20,11 @@ return {
       },
       scope = {
         enabled = true,
+        char = "│",
         show_start = false,
         show_end = false,
         highlight = "IblScope",
+        priority = 1024,
       },
       exclude = {
         filetypes = {

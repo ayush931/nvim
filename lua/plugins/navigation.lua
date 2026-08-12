@@ -160,7 +160,7 @@ return
             },
             keymaps = {
                 ["q"] = "actions.close",
-                ["<C-s>"] = "actions.save"
+                ["<C-s>"] = { callback = function() vim.cmd("w") end, desc = "Save Oil Changes" }
             }
         }
     }}

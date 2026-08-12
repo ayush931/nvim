@@ -16,7 +16,9 @@ require("lazy").setup({
     {
         "LazyVim/LazyVim",
         import = "lazyvim.plugins"
-    }, -- import/override with your plugins
+    },
+    { import = "lazyvim.plugins.extras.editor.neo-tree" },
+    -- import/override with your plugins
     {
         import = "plugins"
     }},
@@ -30,7 +32,10 @@ require("lazy").setup({
         -- version = "*", -- try installing the latest stable version for plugins that support semver
     },
     install = {
-        colorscheme = {"vscode", "tokyonight", "habamax"}
+        colorscheme = {"prodev", "habamax"}
+    },
+    rocks = {
+        enabled = false
     },
     checker = {
         enabled = true, -- check for plugin updates periodically

@@ -14,7 +14,6 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         },
 
         -- Better diagnostic display
-        -- Better diagnostic display
         diagnostics = {
             underline = true,
             update_in_insert = false,
@@ -120,7 +119,7 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         desc = "Type Definition"
     }, {
         "gi",
-        "<cmd>vim.lsp.buf.implementation<CR>",
+        function() vim.lsp.buf.implementation() end,
         desc = "Goto Implementation"
     }, {
         "gr",

@@ -17,6 +17,9 @@ return { -- ── Surround: add/change/delete surrounding pairs ─────
             map = "<M-e>" -- Alt-e to fast-wrap
         }
     }
+}, {
+    "nvim-mini/mini.pairs",
+    enabled = false
 }, -- ── Undo Tree: visualize and navigate undo history ─────────────
 {
     "mbbill/undotree",

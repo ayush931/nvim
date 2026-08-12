@@ -41,6 +41,14 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
 
             -- vtsls: VS Code's TypeScript language service for Neovim
             vtsls = {
+                cmd = (vim.fn.executable("vtsls") == 1) and { "vtsls", "--stdio" }
+                    or (vim.fn.executable("node") == 1) and { "node", vim.fn.stdpath("data") .. "/mason/packages/vtsls/node_modules/@vtsls/language-server/bin/vtsls.js", "--stdio" }
+                    or {
+                        vim.fn.expand("~/.bun/bin/bun"),
+                        vim.fn.stdpath("data")
+                            .. "/mason/packages/vtsls/node_modules/@vtsls/language-server/bin/vtsls.js",
+                        "--stdio",
+                    },
                 settings = {
                     typescript = {
                         updateImportsOnFileMove = {
@@ -134,11 +142,36 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
 
             -- Emmet completions for JSX/TSX (like VS Code built-in)
             emmet_language_server = {
+                cmd = (vim.fn.executable("node") == 1) and { "emmet-language-server", "--stdio" }
+                    or {
+                        vim.fn.expand("~/.bun/bin/bun"),
+                        vim.fn.stdpath("data")
+                            .. "/mason/packages/emmet-language-server/node_modules/@olrtg/emmet-language-server/dist/index.js",
+                        "--stdio",
+                    },
                 filetypes = {"html", "css", "scss", "javascriptreact", "typescriptreact", "svelte", "vue"}
+            },
+
+            html = {
+                cmd = (vim.fn.executable("node") == 1)
+                        and { "vscode-html-language-server", "--stdio" }
+                    or {
+                        vim.fn.expand("~/.bun/bin/bun"),
+                        vim.fn.stdpath("data")
+                            .. "/mason/packages/html-lsp/node_modules/vscode-langservers-extracted/bin/vscode-html-language-server",
+                        "--stdio",
+                    },
             },
 
             -- Tailwind CSS IntelliSense (class suggestions like VS Code extension)
             tailwindcss = {
+                cmd = (vim.fn.executable("node") == 1) and { "tailwindcss-language-server", "--stdio" }
+                    or {
+                        vim.fn.expand("~/.bun/bin/bun"),
+                        vim.fn.stdpath("data")
+                            .. "/mason/packages/tailwindcss-language-server/node_modules/@tailwindcss/language-server/bin/tailwindcss-language-server",
+                        "--stdio",
+                    },
                 filetypes = {"html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact",
                              "svelte", "vue"},
                 settings = {
@@ -155,7 +188,16 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
             },
 
             -- CSS hover info and completions
-            cssls = {},
+            cssls = {
+                cmd = (vim.fn.executable("node") == 1)
+                        and { "vscode-css-language-server", "--stdio" }
+                    or {
+                        vim.fn.expand("~/.bun/bin/bun"),
+                        vim.fn.stdpath("data")
+                            .. "/mason/packages/css-lsp/node_modules/vscode-langservers-extracted/bin/vscode-css-language-server",
+                        "--stdio",
+                    },
+            },
 
             -- JSON schemas: turbo.json, tsconfig, package.json etc.
             jsonls = {
@@ -352,4 +394,3 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
     "ray-x/lsp_signature.nvim",
     enabled = false
 }}
-

@@ -6,22 +6,34 @@ return {
       "nvim-telescope/telescope-live-grep-args.nvim",
     },
     keys = {
-      -- Override LazyVim defaults to always use cwd
-      { "<leader>fF", false },
-      { "<leader><space>", false },
+      -- Override search keys to run from project root directory by default
       {
         "<leader>ff",
+        function()
+          require("telescope.builtin").find_files({ cwd = _G.get_project_root(), hidden = true })
+        end,
+        desc = "Find Files (Root Dir)",
+      },
+      {
+        "<leader>fF",
         function()
           require("telescope.builtin").find_files({ cwd = vim.uv.cwd(), hidden = true })
         end,
         desc = "Find Files (cwd)",
       },
       {
+        "<leader><space>",
+        function()
+          require("telescope.builtin").find_files({ cwd = _G.get_project_root(), hidden = true })
+        end,
+        desc = "Find Files (Root Dir)",
+      },
+      {
         "<leader>fW",
         function()
-          require("telescope").extensions.live_grep_args.live_grep_args()
+          require("telescope").extensions.live_grep_args.live_grep_args({ cwd = _G.get_project_root() })
         end,
-        desc = "Live Grep (args)",
+        desc = "Live Grep (Args - Root Dir)",
       },
       {
         "<leader>fr",
@@ -40,6 +52,7 @@ return {
     },
     opts = function(_, opts)
       opts.defaults = opts.defaults or {}
+      opts.defaults.color_devicons = true
       opts.defaults.file_ignore_patterns = vim.list_extend(opts.defaults.file_ignore_patterns or {}, {
         "node_modules",
         ".git/",
@@ -55,6 +68,7 @@ return {
         horizontal = { preview_width = 0.55 },
         prompt_position = "top",
       })
+      opts.defaults.path_display = { "truncate" }
       opts.defaults.sorting_strategy = "ascending"
 
       opts.extensions = opts.extensions or {}
@@ -70,5 +84,14 @@ return {
       telescope.load_extension("ui-select")
       telescope.load_extension("live_grep_args")
     end,
+  },
+
+  {
+    "folke/which-key.nvim",
+    opts = {
+      spec = {
+        { "<leader>f", group = "file/find" },
+      },
+    },
   },
 }

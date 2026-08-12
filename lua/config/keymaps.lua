@@ -42,24 +42,6 @@ end, {
     desc = "Toggle Inlay Hints"
 })
 
-map("n", "gl", function()
-    local has_saga, saga = pcall(require, "lspsaga.diagnostic")
-    if has_saga and saga then
-        vim.cmd("Lspsaga show_line_diagnostics ++unfocus")
-    else
-        vim.diagnostic.open_float(nil, {
-            border = "rounded",
-            source = "always",
-            focusable = false,
-            max_width = 120,
-            max_height = 30,
-            wrap = true,
-            close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-        })
-    end
-end, {
-    desc = "Show Full Line Diagnostics & Suggestions"
-})
 
 -- Disable automatic LSP signature help popup while typing (e.g. vector, std library functions)
 vim.g.auto_signature_help = false
@@ -87,15 +69,4 @@ end, {
     desc = "Toggle Auto Signature Help Popup"
 })
 
--- Manual signature help trigger in Insert mode (<C-k>)
-map("i", "<C-k>", function()
-    local has_saga, _ = pcall(require, "lspsaga.signaturehelp")
-    if has_saga then
-        vim.cmd("Lspsaga signature_help")
-    else
-        vim.lsp.buf.signature_help()
-    end
-end, {
-    desc = "Toggle Signature Help / Definition"
-})
 

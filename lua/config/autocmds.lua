@@ -12,29 +12,9 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     end
 })
 
--- Auto-create missing parent directories when saving a new file
-vim.api.nvim_create_autocmd("BufWritePre", {
-    callback = function(event)
-        if not event.file or event.file == "" or event.file:match("^%w%w+:[\\/][\\/]") then
-            return
-        end
-        local dir = vim.fn.fnamemodify(event.file, ":p:h")
-        if vim.fn.isdirectory(dir) == 0 then
-            vim.fn.mkdir(dir, "p")
-        end
-    end,
-})
 
--- Style comments with softer grey tone (no italics)
-vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
-    callback = function()
-        vim.api.nvim_set_hl(0, "Comment", { fg = "#556272" })
-    end,
-})
-
-
--- Auto save files when leaving insert mode or losing focus
-vim.api.nvim_create_autocmd({"InsertLeave", "FocusLost"}, {
+-- Auto save files only when losing focus (prevent formatting lag during active editing)
+vim.api.nvim_create_autocmd("FocusLost", {
     pattern = "*",
     callback = function()
         if vim.bo.modified and vim.bo.buftype == "" and not vim.bo.readonly and vim.bo.modifiable and vim.fn.expand("%") ~= "" then
@@ -49,24 +29,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local client = vim.lsp.get_client_by_id(args.data.client_id)
         if not client then
             return
-        end
-
-        -- Ensure signature help auto-popup is suppressed for trigger characters
-        local current_handler = vim.lsp.handlers["textDocument/signatureHelp"]
-        if current_handler and not vim.g._sig_help_wrapped then
-            vim.g._sig_help_wrapped = true
-            local orig_handler = current_handler
-            vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
-                if ctx and ctx.params and ctx.params.context then
-                    local kind = ctx.params.context.triggerKind
-                    if (kind == 2 or kind == 3) and not vim.g.auto_signature_help then
-                        return
-                    end
-                end
-                if orig_handler then
-                    return orig_handler(err, result, ctx, config)
-                end
-            end
         end
 
         if not client:supports_method("textDocument/inlayHint") then
@@ -109,6 +71,23 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "FileType" }, {
 })
 
 -- Ensure floating windows for diagnostics and peek definitions wrap text and close cleanly on q / <Esc>
+local float_ignore_ft = {
+    ["which-key"] = true,
+    ["TelescopePrompt"] = true,
+    ["TelescopeResults"] = true,
+    ["neo-tree"] = true,
+    ["toggleterm"] = true,
+    ["blink-cmp-menu"] = true,
+    ["blink-cmp-documentation"] = true,
+    ["snacks_picker_input"] = true,
+    ["snacks_picker_list"] = true,
+    ["notify"] = true,
+    ["lazy"] = true,
+    ["mason"] = true,
+    ["Trouble"] = true,
+    ["trouble"] = true,
+}
+
 vim.api.nvim_create_autocmd("WinEnter", {
     callback = function()
         local winid = vim.api.nvim_get_current_win()
@@ -116,42 +95,47 @@ vim.api.nvim_create_autocmd("WinEnter", {
         if config.relative ~= "" then
             vim.wo[winid].wrap = true
             local bufnr = vim.api.nvim_win_get_buf(winid)
-            vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
-            vim.keymap.set("n", "<Esc>", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
+            local ft = vim.bo[bufnr].filetype
+            if not float_ignore_ft[ft] then
+                vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
+                vim.keymap.set("n", "<Esc>", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
+            end
         end
     end
 })
 
--- Auto-show diagnostics (errors, warnings, and quick fixes) in a floating box on CursorHold
-vim.api.nvim_create_autocmd("CursorHold", {
-    callback = function()
-        if vim.api.nvim_get_mode().mode ~= "n" then
-            return
-        end
-
-        -- Check if a floating window is already open
-        for _, winid in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-            if vim.api.nvim_win_get_config(winid).relative ~= "" then
-                return
-            end
-        end
-
-        -- Only trigger if there are diagnostics on the current line
-        local line = vim.api.nvim_win_get_cursor(0)[1] - 1
-        local bufnr = vim.api.nvim_get_current_buf()
-        local diagnostics = vim.diagnostic.get(bufnr, { lnum = line })
-        if #diagnostics > 0 then
-            local has_saga, _ = pcall(require, "lspsaga.diagnostic")
-            if has_saga then
-                vim.cmd("Lspsaga show_line_diagnostics ++unfocus")
-            else
-                vim.diagnostic.open_float(nil, {
-                    focusable = false,
-                    close_events = { "CursorMoved", "CursorMovedI", "BufLeave", "InsertEnter", "FocusLost" },
-                    border = "rounded",
-                    source = "always",
-                })
-            end
-        end
-    end,
-})
+-- Auto-show diagnostics on CursorHold disabled to prevent cursor/navigation lag.
+-- Virtual text is already active, and you can show line diagnostics manually using `gl` or `<leader>cD`.
+--
+-- vim.api.nvim_create_autocmd("CursorHold", {
+--     callback = function()
+--         if vim.api.nvim_get_mode().mode ~= "n" then
+--             return
+--         end
+-- 
+--         -- Check if a floating window is already open
+--         for _, winid in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+--             if vim.api.nvim_win_get_config(winid).relative ~= "" then
+--                 return
+--             end
+--         end
+-- 
+--         -- Only trigger if there are diagnostics on the current line
+--         local line = vim.api.nvim_win_get_cursor(0)[1] - 1
+--         local bufnr = vim.api.nvim_get_current_buf()
+--         local diagnostics = vim.diagnostic.get(bufnr, { lnum = line })
+--         if #diagnostics > 0 then
+--             local has_saga, _ = pcall(require, "lspsaga.diagnostic")
+--             if has_saga then
+--                 vim.cmd("Lspsaga show_line_diagnostics ++unfocus")
+--             else
+--                 vim.diagnostic.open_float(nil, {
+--                     focusable = false,
+--                     close_events = { "CursorMoved", "CursorMovedI", "BufLeave", "InsertEnter", "FocusLost" },
+--                     border = "rounded",
+--                     source = "always",
+--                 })
+--             end
+--         end
+--     end,
+-- })

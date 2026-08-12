@@ -41,10 +41,11 @@ return { -- Side-by-side diff viewer and file history
         event = {"BufReadPre", "BufNewFile"},
         init = function()
             local function set_git_sign_highlights()
-                vim.api.nvim_set_hl(0, "GitSignsAdd", {fg = "#7ee787", bg = "NONE", bold = true})
-                vim.api.nvim_set_hl(0, "GitSignsChange", {fg = "#79c0ff", bg = "NONE", bold = true})
-                vim.api.nvim_set_hl(0, "GitSignsDelete", {fg = "#ff7b72", bg = "NONE", bold = true})
-                vim.api.nvim_set_hl(0, "GitSignsChangeDelete", {fg = "#d2a8ff", bg = "NONE", bold = true})
+                vim.api.nvim_set_hl(0, "GitSignsAdd", {fg = "#34D399", bg = "NONE"})
+                vim.api.nvim_set_hl(0, "GitSignsChange", {fg = "#38BDF8", bg = "NONE"})
+                vim.api.nvim_set_hl(0, "GitSignsDelete", {fg = "#F43F5E", bg = "NONE"})
+                vim.api.nvim_set_hl(0, "GitSignsChangeDelete", {fg = "#A855F7", bg = "NONE"})
+                vim.api.nvim_set_hl(0, "GitSignsUntracked", {fg = "#64748B", bg = "NONE"})
                 vim.api.nvim_set_hl(0, "SignColumn", {bg = "NONE"})
             end
 
@@ -55,11 +56,19 @@ return { -- Side-by-side diff viewer and file history
         end,
         opts = {
             signs = {
-                add = {hl = "GitSignsAdd", text = "+", numhl = "GitSignsAddNr"},
-                change = {hl = "GitSignsChange", text = "~", numhl = "GitSignsChangeNr"},
-                delete = {hl = "GitSignsDelete", text = "_", numhl = "GitSignsDeleteNr"},
-                topdelete = {hl = "GitSignsDelete", text = "‾", numhl = "GitSignsDeleteNr"},
-                changedelete = {hl = "GitSignsChangeDelete", text = "±", numhl = "GitSignsChangeNr"}
+                add          = { text = "▎" },
+                change       = { text = "▎" },
+                delete       = { text = "_" },
+                topdelete    = { text = "‾" },
+                changedelete = { text = "│" },
+                untracked    = { text = "┆" },
+            },
+            signs_staged = {
+                add          = { text = "▎" },
+                change       = { text = "▎" },
+                delete       = { text = "_" },
+                topdelete    = { text = "‾" },
+                changedelete = { text = "│" },
             },
             current_line_blame = true,
             on_attach = function(bufnr)

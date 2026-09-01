@@ -46,7 +46,7 @@ end, {
 -- Disable automatic LSP signature help popup while typing (e.g. vector, std library functions)
 vim.g.auto_signature_help = false
 
-local orig_sig_help = vim.lsp.handlers["textDocument/signatureHelp"]
+local orig_sig_help = vim.lsp.handlers["textDocument/signatureHelp"] or vim.lsp.handlers.signature_help
 vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
     if ctx and ctx.params and ctx.params.context then
         local kind = ctx.params.context.triggerKind
@@ -55,8 +55,10 @@ vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, conf
             return
         end
     end
-    if orig_sig_help then
+    if orig_sig_help and orig_sig_help ~= vim.lsp.handlers["textDocument/signatureHelp"] then
         return orig_sig_help(err, result, ctx, config)
+    elseif vim.lsp.handlers.signature_help and vim.lsp.handlers.signature_help ~= vim.lsp.handlers["textDocument/signatureHelp"] then
+        return vim.lsp.handlers.signature_help(err, result, ctx, config)
     end
 end
 

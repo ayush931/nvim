@@ -49,54 +49,6 @@ return { -- Turborepo keymaps
         end,
         desc = "Grep (packages/apps)"
     }}
-}, -- Make vtsls understand monorepo workspace packages for auto-imports
-{
-    "neovim/nvim-lspconfig",
-    opts = {
-        servers = {
-            vtsls = {
-                settings = {
-                    vtsls = {
-                        autoUseWorkspaceTsdk = true,
-                        experimental = {
-                            completion = {
-                                enableServerSideFuzzyMatch = true
-                            }
-                        }
-                    },
-                    typescript = {
-                        preferences = {
-                            -- Use workspace-relative imports (@repo/ui, @repo/utils)
-                            importModuleSpecifier = "non-relative",
-                            -- Prefer the project's path aliases
-                            importModuleSpecifierEnding = "minimal"
-                        },
-                        -- Suggest auto-imports from all workspace packages
-                        suggest = {
-                            autoImports = true,
-                            completeFunctionCalls = true,
-                            includeCompletionsForModuleExports = true,
-                            includeCompletionsWithSnippetText = true
-                        },
-                        -- Rename imports when moving files across packages
-                        updateImportsOnFileMove = {
-                            enabled = "always"
-                        },
-                        tsserver = {
-                            maxTsServerMemory = 8192
-                        }
-                    },
-                    javascript = {
-                        suggest = {
-                            autoImports = true,
-                            completeFunctionCalls = true,
-                            includeCompletionsForModuleExports = true
-                        }
-                    }
-                }
-            }
-        }
-    }
 }, -- ESLint integration scoped to workspace (respects root eslint config)
 {
     "neovim/nvim-lspconfig",

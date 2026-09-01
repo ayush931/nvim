@@ -39,7 +39,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                 enabled = false
             },
 
-            -- vtsls: VS Code's TypeScript language service for Neovim
+            -- vtsls: VS Code's TypeScript language service for Neovim (optimized for zero typing lag)
             vtsls = {
                 cmd = (vim.fn.executable("vtsls") == 1) and { "vtsls", "--stdio" }
                     or (vim.fn.executable("node") == 1) and { "node", vim.fn.stdpath("data") .. "/mason/packages/vtsls/node_modules/@vtsls/language-server/bin/vtsls.js", "--stdio" }
@@ -57,6 +57,8 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                         suggest = {
                             completeFunctionCalls = false,
                             autoImports = true,
+                            includeCompletionsForModuleExports = false,
+                            includeCompletionsWithSnippetText = false,
                             classMemberSnippets = {
                                 enabled = false
                             },
@@ -87,10 +89,17 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                         preferences = {
                             importModuleSpecifier = "non-relative",
                             importModuleSpecifierEnding = "minimal",
-                            autoImportFileExcludePatterns = {"node_modules/.cache/**"}
+                            autoImportFileExcludePatterns = {
+                                "node_modules/.cache/**",
+                                "**/dist/**",
+                                "**/.next/**",
+                                "**/.turbo/**",
+                                "**/build/**",
+                                "**/coverage/**"
+                            }
                         },
                         tsserver = {
-                            maxTsServerMemory = 4096
+                            maxTsServerMemory = 8192
                         }
                     },
                     javascript = {
@@ -99,7 +108,15 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                         },
                         suggest = {
                             completeFunctionCalls = false,
-                            autoImports = true
+                            autoImports = true,
+                            includeCompletionsForModuleExports = false,
+                            includeCompletionsWithSnippetText = false,
+                            classMemberSnippets = {
+                                enabled = false
+                            },
+                            objectLiteralMethodSnippets = {
+                                enabled = false
+                            }
                         },
                         inlayHints = {
                             parameterNames = {
@@ -120,6 +137,21 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                             enumMemberValues = {
                                 enabled = false
                             }
+                        },
+                        preferences = {
+                            importModuleSpecifier = "non-relative",
+                            importModuleSpecifierEnding = "minimal",
+                            autoImportFileExcludePatterns = {
+                                "node_modules/.cache/**",
+                                "**/dist/**",
+                                "**/.next/**",
+                                "**/.turbo/**",
+                                "**/build/**",
+                                "**/coverage/**"
+                            }
+                        },
+                        tsserver = {
+                            maxTsServerMemory = 8192
                         }
                     },
                     vtsls = {
@@ -128,7 +160,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                         experimental = {
                             completion = {
                                 enableServerSideFuzzyMatch = true,
-                                entriesLimit = 300
+                                entriesLimit = 100
                             }
                         },
                         tsserver = {
@@ -137,7 +169,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                     }
                 },
                 -- Make vtsls aware of monorepo project references
-                root_markers = {"tsconfig.json", "package.json", "turbo.json", ".git"}
+                root_markers = {"tsconfig.json", "jsconfig.json", "package.json", "turbo.json", ".git"}
             },
 
             -- Emmet completions for JSX/TSX (like VS Code built-in)
@@ -242,58 +274,58 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
     opts = {
         formatters_by_ft = {
             javascript = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             javascriptreact = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             typescript = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             typescriptreact = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             json = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             jsonc = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             html = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             css = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             scss = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             markdown = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             },
             yaml = {
-                "prettier",
                 "prettierd",
+                "prettier",
                 stop_after_first = true
             }
         }

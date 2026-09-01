@@ -4,12 +4,12 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
     opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
         vim.list_extend(opts.ensure_installed, { -- LSPs
-        "bash-language-server", "docker-compose-language-service", "dockerfile-language-server", "gopls",
+        "bash-language-server", "clangd", "docker-compose-language-service", "dockerfile-language-server", "gopls",
         "graphql-language-service-cli", "json-lsp", "lua-language-server", "marksman", "prisma-language-server",
         "basedpyright", "ruff", "rust-analyzer", "sqlls", "taplo", "terraform-ls", "tflint", "yaml-language-server",
 
         -- Formatters / linters
-        "black", "goimports", "isort", "prettierd", "shfmt", "stylua", "sqlfluff", -- DAP / debuggers
+        "black", "clang-format", "goimports", "isort", "prettierd", "shfmt", "stylua", "sqlfluff", -- DAP / debuggers
         "debugpy", "delve", "js-debug-adapter"})
         return opts
     end
@@ -26,7 +26,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
                     "--header-insertion=iwyu",
                     "--completion-style=detailed",
                     "--function-arg-placeholders",
-                    "--fallback-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never}",
+                    "--fallback-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never, ColumnLimit: 0, AccessModifierOffset: -4}",
                 },
             },
             dockerls = {},

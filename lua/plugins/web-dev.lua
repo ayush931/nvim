@@ -2,8 +2,14 @@ return {
   -- Auto-close and auto-rename HTML/JSX tags
   {
     "windwp/nvim-ts-autotag",
-    event = "InsertEnter",
-    opts = {},
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {
+      opts = {
+        enable_close = true,
+        enable_rename = true,
+        enable_close_on_slash = false,
+      },
+    },
   },
 
   -- Show package versions inline in package.json
@@ -23,12 +29,9 @@ return {
     },
   },
 
-  -- Tailwind CSS color previews in completion menu
+  -- Tailwind CSS color previews (nvim-cmp only, disabled for blink.cmp)
   {
     "roobert/tailwindcss-colorizer-cmp.nvim",
-    ft = { "html", "css", "javascript", "javascriptreact", "typescript", "typescriptreact", "svelte", "vue" },
-    opts = {
-      color_square_width = 2,
-    },
+    enabled = false,
   },
 }

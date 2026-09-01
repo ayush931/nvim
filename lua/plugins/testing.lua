@@ -1,9 +1,8 @@
 return { -- Neotest: unified test runner UI (run/debug tests like VS Code Testing panel)
 {
     "nvim-neotest/neotest",
-    dependencies = {"nvim-neotest/nvim-nio", "nvim-lua/plenary.nvim", "antoinemadec/FixCursorHold.nvim",
-                    "nvim-treesitter/nvim-treesitter", -- Test adapters
-    "nvim-neotest/neotest-jest", "marilari88/neotest-vitest", "nvim-neotest/neotest-python"},
+    dependencies = {"nvim-neotest/nvim-nio", "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter", -- Test adapters
+                    "nvim-neotest/neotest-jest", "marilari88/neotest-vitest", "nvim-neotest/neotest-python"},
     keys = {{
         "<leader>tn",
         function()

@@ -36,22 +36,10 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
             }
         }
     }
-}, -- Dim unused variables/imports (like VS Code graying out)
+}, -- Dim unused variables/imports natively via Neovim 0.10+ DiagnosticUnnecessary
 {
     "zbirenbaum/neodim",
-    event = "LspAttach",
-    opts = {
-        alpha = 0.60,
-        blend_color = "#000000",
-        hide = {
-            underline = true,
-            virtual_text = true,
-            signs = true
-        },
-        regex = {"[uU]nused", "[nN]ever [rR]ead", "[nN]ot [rR]ead"},
-        priority = 128,
-        disable = {}
-    }
+    enabled = false,
 }, -- Better LSP UI: rename, code actions, hover with nice borders
 {
     "nvimdev/lspsaga.nvim",
@@ -59,7 +47,7 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
     dependencies = {"nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons"},
     opts = {
         symbol_in_winbar = {
-            enable = true
+            enable = false
         },
         lightbulb = {
             enable = false

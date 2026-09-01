@@ -1,33 +1,29 @@
 -- Options are automatically loaded before lazy.nvim startup
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
-
 -- Find and dynamically resolve the project root directory of the active file or workspace
 _G.get_project_root = function()
-  local current = vim.api.nvim_buf_get_name(0)
-  if current == "" or vim.bo.buftype ~= "" then
-    current = vim.uv.cwd()
-  end
-  local root = vim.fs.root(current, { ".git", "turbo.json", "package.json", "Makefile", "Cargo.toml", "go.mod" })
-  return root or vim.uv.cwd()
+    local current = vim.api.nvim_buf_get_name(0)
+    local cwd = (vim.uv or vim.loop).cwd() or vim.fn.getcwd()
+    if current == "" or vim.bo.buftype ~= "" then
+        return cwd
+    end
+    local root = vim.fs.root(current, {".git", "turbo.json", "package.json", "Makefile", "Cargo.toml", "go.mod"})
+    return root or cwd
 end
-
 
 -- Ensure user local bin and bun bin directories are in PATH for LSP language servers (vtsls, tailwind, etc.)
 local home = os.getenv("HOME") or ""
 if home ~= "" then
-  local extra_paths = {
-    home .. "/.local/bin",
-    home .. "/.bun/bin",
-    home .. "/.cargo/bin",
-  }
-  local current_path = os.getenv("PATH") or ""
-  for _, p in ipairs(extra_paths) do
-    if vim.fn.isdirectory(p) == 1 and not current_path:find(p, 1, true) then
-      current_path = p .. ":" .. current_path
+    local uv = vim.uv or vim.loop
+    local extra_paths = {home .. "/.local/bin", home .. "/.bun/bin", home .. "/.cargo/bin"}
+    local current_path = os.getenv("PATH") or ""
+    for _, p in ipairs(extra_paths) do
+        if uv.fs_stat(p) and not current_path:find(p, 1, true) then
+            current_path = p .. ":" .. current_path
+        end
     end
-  end
-  vim.env.PATH = current_path
+    vim.env.PATH = current_path
 end
 
 -- Disable unused providers to avoid healthcheck warnings & speed startup
@@ -37,7 +33,7 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 
 -- Use Git/project root first, then monorepo markers, LSP, then CWD as fallback
-vim.g.root_spec = { ".git", "turbo.json", "package.json", "lsp", "cwd" }
+vim.g.root_spec = {".git", "turbo.json", "package.json", "lsp", "cwd"}
 
 -- GUI Font & Zoom settings
 local default_font_size = 7
@@ -46,24 +42,54 @@ vim.opt.guifont = "Fira Code:h" .. default_font_size
 -- Dynamic font zoom controls for GUIs (Neovide, Nvim-qt, etc.)
 local current_font_size = default_font_size
 local function set_font_size(size)
-  current_font_size = math.max(4, math.min(30, size))
-  vim.opt.guifont = "Fira Code:h" .. current_font_size
-  if vim.g.neovide then
-    vim.g.neovide_scale_factor = current_font_size / 8.0
-  end
+    current_font_size = math.max(4, math.min(30, size))
+    vim.opt.guifont = "Fira Code:h" .. current_font_size
+    if vim.g.neovide then
+        vim.g.neovide_scale_factor = current_font_size / 8.0
+    end
 end
 
-vim.keymap.set({ "n", "v", "i" }, "<C-->", function() set_font_size(current_font_size - 1) end, { desc = "Zoom Out (Reduce Font Size)" })
-vim.keymap.set({ "n", "v", "i" }, "<C-=>", function() set_font_size(current_font_size + 1) end, { desc = "Zoom In (Increase Font Size)" })
-vim.keymap.set({ "n", "v", "i" }, "<C-0>", function() set_font_size(default_font_size) end, { desc = "Reset Font Size" })
+vim.keymap.set({"n", "v", "i"}, "<C-->", function()
+    set_font_size(current_font_size - 1)
+end, {
+    desc = "Zoom Out (Reduce Font Size)"
+})
+vim.keymap.set({"n", "v", "i"}, "<C-=>", function()
+    set_font_size(current_font_size + 1)
+end, {
+    desc = "Zoom In (Increase Font Size)"
+})
+vim.keymap.set({"n", "v", "i"}, "<C-0>", function()
+    set_font_size(default_font_size)
+end, {
+    desc = "Reset Font Size"
+})
 
--- Cursor shaping: block in normal/visual mode, thin vertical line (ver10) in insert mode
-vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver10,r-cr:hor20,o:hor50"
+-- Cursor shaping: block in normal/visual/command, ultra-thin vertical line (1%) in insert mode
+vim.opt.guicursor = "n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver1-Cursor/lCursor,r-cr:hor20-rCursor,o:hor50-Cursor"
+
+-- Ensure cursor highlight groups are pure white across all modes
+local function set_cursor_highlights()
+    local c_white = "#FFFFFF"
+    local c_bg = "#1E2024"
+    vim.api.nvim_set_hl(0, "Cursor", { fg = c_bg, bg = c_white, bold = true })
+    vim.api.nvim_set_hl(0, "lCursor", { fg = c_bg, bg = c_white, bold = true })
+    vim.api.nvim_set_hl(0, "CursorIM", { fg = c_bg, bg = c_white, bold = true })
+    vim.api.nvim_set_hl(0, "TermCursor", { fg = c_bg, bg = c_white, bold = true })
+    vim.api.nvim_set_hl(0, "TermCursorNC", { fg = "#828C9E", bg = "#353A45", bold = true })
+    vim.api.nvim_set_hl(0, "vCursor", { fg = c_bg, bg = c_white, bold = true })
+    vim.api.nvim_set_hl(0, "iCursor", { fg = c_bg, bg = c_white, bold = true })
+    vim.api.nvim_set_hl(0, "rCursor", { fg = c_bg, bg = c_white, bold = true })
+end
+set_cursor_highlights()
+vim.api.nvim_create_autocmd({"ColorScheme", "VimEnter"}, {
+    callback = set_cursor_highlights,
+})
 
 -- Auto-save related options
 vim.opt.autowrite = true
-vim.opt.autowriteall = true
-vim.opt.updatetime = 200
+vim.opt.autowriteall = false
+vim.opt.updatetime = 300
 
 -- Editing ergonomics
 vim.opt.swapfile = false
@@ -80,27 +106,27 @@ vim.opt.confirm = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
--- Ergonomics
-if vim.fn.executable("wl-copy") == 1 and vim.fn.executable("wl-paste") == 1 then
-  local paste_cmd = "wl-paste --no-newline --type text/plain"
-  local paste_primary_cmd = "wl-paste --primary --no-newline --type text/plain"
-  if vim.fn.executable("timeout") == 1 then
-    paste_cmd = "timeout 0.5 " .. paste_cmd
-    paste_primary_cmd = "timeout 0.5 " .. paste_primary_cmd
-  end
+-- Ergonomics & Wayland clipboard detection (only if WAYLAND_DISPLAY is active to avoid hangs/lag)
+if vim.env.WAYLAND_DISPLAY and vim.fn.executable("wl-copy") == 1 and vim.fn.executable("wl-paste") == 1 then
+    local paste_cmd = "wl-paste --no-newline --type text/plain"
+    local paste_primary_cmd = "wl-paste --primary --no-newline --type text/plain"
+    if vim.fn.executable("timeout") == 1 then
+        paste_cmd = "timeout 0.05 " .. paste_cmd
+        paste_primary_cmd = "timeout 0.05 " .. paste_primary_cmd
+    end
 
-  vim.g.clipboard = {
-    name = "wl-clipboard",
-    copy = {
-      ["+"] = "wl-copy --type text/plain",
-      ["*"] = "wl-copy --primary --type text/plain",
-    },
-    paste = {
-      ["+"] = paste_cmd,
-      ["*"] = paste_primary_cmd,
-    },
-    cache_enabled = 1,
-  }
+    vim.g.clipboard = {
+        name = "wl-clipboard",
+        copy = {
+            ["+"] = "wl-copy --type text/plain",
+            ["*"] = "wl-copy --primary --type text/plain"
+        },
+        paste = {
+            ["+"] = paste_cmd,
+            ["*"] = paste_primary_cmd
+        },
+        cache_enabled = 1
+    }
 end
 
 vim.opt.clipboard = "unnamedplus"
@@ -128,8 +154,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
             return
         end
         local dir = vim.fn.fnamemodify(event.file, ":p:h")
-        if vim.fn.isdirectory(dir) == 0 then
+        local uv = vim.uv or vim.loop
+        if not uv.fs_stat(dir) then
             vim.fn.mkdir(dir, "p")
         end
-    end,
+    end
 })

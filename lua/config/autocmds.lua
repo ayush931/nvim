@@ -1,8 +1,6 @@
 -- Autocmds are automatically loaded on the VeryLazy event
 -- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
---
 -- Add any additional autocmds here
--- with `vim.api.nvim_create_autocmd`
 
 -- Filetype detection for Prisma
 vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
@@ -12,26 +10,51 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
     end
 })
 
-
 -- Auto save files only when losing focus (prevent formatting lag during active editing)
 vim.api.nvim_create_autocmd("FocusLost", {
     pattern = "*",
     callback = function()
-        if vim.bo.modified and vim.bo.buftype == "" and not vim.bo.readonly and vim.bo.modifiable and vim.fn.expand("%") ~= "" then
+        local bufnr = vim.api.nvim_get_current_buf()
+        if vim.api.nvim_buf_is_valid(bufnr)
+            and vim.bo[bufnr].modified
+            and vim.bo[bufnr].buftype == ""
+            and not vim.bo[bufnr].readonly
+            and vim.bo[bufnr].modifiable
+            and vim.api.nvim_buf_get_name(bufnr) ~= ""
+        then
             vim.cmd("silent! write")
         end
     end
 })
 
--- Enable inlay hints when LSP attaches to a buffer (with sensible exclusions)
+-- C / C++ 4-space tab and indentation settings (expandtab, shiftwidth=4, tabstop=4, softtabstop=4)
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "c", "cpp", "cuda", "objc", "objcpp", "proto" },
+    callback = function()
+        vim.opt_local.tabstop = 4
+        vim.opt_local.shiftwidth = 4
+        vim.opt_local.softtabstop = 4
+        vim.opt_local.expandtab = true
+        vim.opt_local.cindent = true
+        vim.opt_local.cinoptions = "g0,N-s,j1,(0,ws,Ws"
+    end,
+})
+
+-- Enable inlay hints when LSP attaches to a buffer (with defensive checks)
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
+        if not vim.api.nvim_buf_is_valid(args.buf) then
+            return
+        end
         local client = vim.lsp.get_client_by_id(args.data.client_id)
-        if not client then
+        if not client or client:is_stopped() then
             return
         end
 
-        if not client:supports_method("textDocument/inlayHint") then
+        local ok, supports_hints = pcall(function()
+            return client:supports_method("textDocument/inlayHint")
+        end)
+        if not ok or not supports_hints then
             return
         end
 
@@ -45,18 +68,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
             return
         end
 
-        -- Only enable inlay hints if globally enabled
-        local global_enabled = false
-        if vim.g.lsp_inlay_hints_enabled ~= nil then
-            global_enabled = vim.g.lsp_inlay_hints_enabled
-        else
-            -- fallback to opts in plugins/lsp.lua if available
-            local ok, lspconfig = pcall(require, "plugins.lsp")
-            if ok and lspconfig and lspconfig[1] and lspconfig[1].opts and lspconfig[1].opts.inlay_hints then
-                global_enabled = lspconfig[1].opts.inlay_hints.enabled
-            end
-        end
-        vim.lsp.inlay_hint.enable(global_enabled, {
+        local global_enabled = vim.g.lsp_inlay_hints_enabled == true
+        pcall(vim.lsp.inlay_hint.enable, global_enabled, {
             bufnr = args.buf
         })
     end
@@ -86,56 +99,32 @@ local float_ignore_ft = {
     ["mason"] = true,
     ["Trouble"] = true,
     ["trouble"] = true,
+    ["oil"] = true,
 }
 
 vim.api.nvim_create_autocmd("WinEnter", {
     callback = function()
         local winid = vim.api.nvim_get_current_win()
-        local config = vim.api.nvim_win_get_config(winid)
-        if config.relative ~= "" then
-            vim.wo[winid].wrap = true
-            local bufnr = vim.api.nvim_win_get_buf(winid)
-            local ft = vim.bo[bufnr].filetype
-            if not float_ignore_ft[ft] then
+        if not vim.api.nvim_win_is_valid(winid) then
+            return
+        end
+        local ok, config = pcall(vim.api.nvim_win_get_config, winid)
+        if not ok or not config or config.relative == "" then
+            return
+        end
+        vim.wo[winid].wrap = true
+        local bufnr = vim.api.nvim_win_get_buf(winid)
+        if not vim.api.nvim_buf_is_valid(bufnr) then
+            return
+        end
+        local ft = vim.bo[bufnr].filetype
+        local bt = vim.bo[bufnr].buftype
+        if not float_ignore_ft[ft] and bt ~= "prompt" and bt ~= "terminal" then
+            if not vim.b[bufnr]._float_close_mapped then
+                vim.b[bufnr]._float_close_mapped = true
                 vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
                 vim.keymap.set("n", "<Esc>", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
             end
         end
     end
 })
-
--- Auto-show diagnostics on CursorHold disabled to prevent cursor/navigation lag.
--- Virtual text is already active, and you can show line diagnostics manually using `gl` or `<leader>cD`.
---
--- vim.api.nvim_create_autocmd("CursorHold", {
---     callback = function()
---         if vim.api.nvim_get_mode().mode ~= "n" then
---             return
---         end
--- 
---         -- Check if a floating window is already open
---         for _, winid in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
---             if vim.api.nvim_win_get_config(winid).relative ~= "" then
---                 return
---             end
---         end
--- 
---         -- Only trigger if there are diagnostics on the current line
---         local line = vim.api.nvim_win_get_cursor(0)[1] - 1
---         local bufnr = vim.api.nvim_get_current_buf()
---         local diagnostics = vim.diagnostic.get(bufnr, { lnum = line })
---         if #diagnostics > 0 then
---             local has_saga, _ = pcall(require, "lspsaga.diagnostic")
---             if has_saga then
---                 vim.cmd("Lspsaga show_line_diagnostics ++unfocus")
---             else
---                 vim.diagnostic.open_float(nil, {
---                     focusable = false,
---                     close_events = { "CursorMoved", "CursorMovedI", "BufLeave", "InsertEnter", "FocusLost" },
---                     border = "rounded",
---                     source = "always",
---                 })
---             end
---         end
---     end,
--- })

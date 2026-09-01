@@ -5,6 +5,8 @@ return {
       formatters_by_ft = {
         cpp = { "clang-format" },
         c = { "clang-format" },
+        cuda = { "clang-format" },
+        proto = { "clang-format" },
       },
       formatters = {
         prettier = {
@@ -20,7 +22,14 @@ return {
           prepend_args = { "--indent-width", "4", "--indent-type", "Spaces" },
         },
         ["clang-format"] = {
-          prepend_args = { "-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never}" },
+          prepend_args = {
+            "-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never, ColumnLimit: 0, AccessModifierOffset: -4}",
+          },
+        },
+        clang_format = {
+          prepend_args = {
+            "-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never, ColumnLimit: 0, AccessModifierOffset: -4}",
+          },
         },
       },
     },

@@ -1,34 +1,39 @@
 return { -- Refactoring: extract function/variable, inline variable, etc.
 {
     "ThePrimeagen/refactoring.nvim",
-    dependencies = {"nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter"},
+    dependencies = {"lewis6991/async.nvim"},
     keys = {{
         "<leader>re",
         function()
-            require("refactoring").refactor("Extract Function")
+            return require("refactoring").extract_func()
         end,
         desc = "Extract Function",
-        mode = "v"
+        mode = "v",
+        expr = true
     }, {
         "<leader>rv",
         function()
-            require("refactoring").refactor("Extract Variable")
+            return require("refactoring").extract_var()
         end,
         desc = "Extract Variable",
-        mode = "v"
+        mode = "v",
+        expr = true
     }, {
         "<leader>ri",
         function()
-            require("refactoring").refactor("Inline Variable")
+            return require("refactoring").inline_var()
         end,
         desc = "Inline Variable",
-        mode = {"n", "v"}
+        mode = {"n", "v"},
+        expr = true
     }, {
         "<leader>rb",
         function()
-            require("refactoring").refactor("Extract Block")
+            return require("refactoring").inline_func()
         end,
-        desc = "Extract Block"
+        desc = "Inline Function",
+        mode = {"n", "v"},
+        expr = true
     }, {
         "<leader>rr",
         function()

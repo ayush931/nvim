@@ -35,17 +35,17 @@ vim.g.loaded_node_provider = 0
 -- Use Git/project root first, then monorepo markers, LSP, then CWD as fallback
 vim.g.root_spec = {".git", "turbo.json", "package.json", "lsp", "cwd"}
 
--- GUI Font & Zoom settings
-local default_font_size = 7
+-- GUI Font & Zoom settings (Fira Code with ligatures)
+local default_font_size = 11
 vim.opt.guifont = "Fira Code:h" .. default_font_size
 
 -- Dynamic font zoom controls for GUIs (Neovide, Nvim-qt, etc.)
 local current_font_size = default_font_size
 local function set_font_size(size)
-    current_font_size = math.max(4, math.min(30, size))
+    current_font_size = math.max(6, math.min(30, size))
     vim.opt.guifont = "Fira Code:h" .. current_font_size
     if vim.g.neovide then
-        vim.g.neovide_scale_factor = current_font_size / 8.0
+        vim.g.neovide_scale_factor = current_font_size / 12.0
     end
 end
 
@@ -64,6 +64,17 @@ vim.keymap.set({"n", "v", "i"}, "<C-0>", function()
 end, {
     desc = "Reset Font Size"
 })
+
+-- Neovide-specific clarity enhancements
+if vim.g.neovide then
+    vim.g.neovide_text_gamma = 0.0
+    vim.g.neovide_text_contrast = 0.1
+    vim.g.neovide_cursor_animation_length = 0
+    vim.g.neovide_cursor_antialiasing = true
+    vim.g.neovide_floating_shadow = true
+    vim.g.neovide_floating_blur_amount_x = 3
+    vim.g.neovide_floating_blur_amount_y = 3
+end
 
 -- Cursor shaping: block in normal/visual/command, ultra-thin vertical line (1%) in insert mode
 vim.opt.guicursor = "n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver1-Cursor/lCursor,r-cr:hor20-rCursor,o:hor50-Cursor"

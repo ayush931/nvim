@@ -39,21 +39,6 @@ return { -- Side-by-side diff viewer and file history
     {
         "lewis6991/gitsigns.nvim",
         event = {"BufReadPre", "BufNewFile"},
-        init = function()
-            local function set_git_sign_highlights()
-                vim.api.nvim_set_hl(0, "GitSignsAdd", {fg = "#34D399", bg = "NONE"})
-                vim.api.nvim_set_hl(0, "GitSignsChange", {fg = "#38BDF8", bg = "NONE"})
-                vim.api.nvim_set_hl(0, "GitSignsDelete", {fg = "#F43F5E", bg = "NONE"})
-                vim.api.nvim_set_hl(0, "GitSignsChangeDelete", {fg = "#A855F7", bg = "NONE"})
-                vim.api.nvim_set_hl(0, "GitSignsUntracked", {fg = "#64748B", bg = "NONE"})
-                vim.api.nvim_set_hl(0, "SignColumn", {bg = "NONE"})
-            end
-
-            set_git_sign_highlights()
-            vim.api.nvim_create_autocmd("ColorScheme", {
-                callback = set_git_sign_highlights
-            })
-        end,
         opts = {
             signs = {
                 add          = { text = "▎" },
@@ -78,10 +63,37 @@ return { -- Side-by-side diff viewer and file history
                     opts.buffer = bufnr
                     vim.keymap.set(mode, l, r, opts)
                 end
-                map('n', '<leader>gb', gs.blame_line, {desc = "Git Blame Line"})
-                map('n', '<leader>gp', gs.preview_hunk, {desc = "Preview Hunk"})
-                map('n', '<leader>gr', gs.reset_hunk, {desc = "Reset Hunk"})
-                map('n', '<leader>gs', gs.stage_hunk, {desc = "Stage Hunk"})
+                map("n", "]h", function()
+                    if vim.wo.diff then
+                        vim.cmd.normal({ "]c", bang = true })
+                    else
+                        gs.nav_hunk("next")
+                    end
+                end, { desc = "Next Hunk" })
+                map("n", "[h", function()
+                    if vim.wo.diff then
+                        vim.cmd.normal({ "[c", bang = true })
+                    else
+                        gs.nav_hunk("prev")
+                    end
+                end, { desc = "Prev Hunk" })
+                map("n", "]H", function() gs.nav_hunk("last") end, { desc = "Last Hunk" })
+                map("n", "[H", function() gs.nav_hunk("first") end, { desc = "First Hunk" })
+                map({"n", "x"}, "<leader>ghs", ":Gitsigns stage_hunk<CR>", { desc = "Stage Hunk" })
+                map({"n", "x"}, "<leader>ghr", ":Gitsigns reset_hunk<CR>", { desc = "Reset Hunk" })
+                map("n", "<leader>ghS", gs.stage_buffer, { desc = "Stage Buffer" })
+                map("n", "<leader>ghu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
+                map("n", "<leader>ghR", gs.reset_buffer, { desc = "Reset Buffer" })
+                map("n", "<leader>ghp", gs.preview_hunk_inline, { desc = "Preview Hunk Inline" })
+                map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, { desc = "Blame Line" })
+                map("n", "<leader>ghB", gs.blame, { desc = "Blame Buffer" })
+                map("n", "<leader>ghd", gs.diffthis, { desc = "Diff This" })
+                map("n", "<leader>ghD", function() gs.diffthis("~") end, { desc = "Diff This ~" })
+                map({"o", "x"}, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select Hunk" })
+                map('n', '<leader>gb', gs.blame_line, { desc = "Git Blame Line" })
+                map('n', '<leader>gp', gs.preview_hunk, { desc = "Preview Hunk" })
+                map('n', '<leader>gr', gs.reset_hunk, { desc = "Reset Hunk" })
+                map('n', '<leader>gs', gs.stage_hunk, { desc = "Stage Hunk" })
             end
         }
     },

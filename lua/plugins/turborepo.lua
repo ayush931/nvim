@@ -7,23 +7,53 @@ return { -- Turborepo keymaps
             group = "turbo"
         }, {
             "<leader>Tt",
-            "<cmd>!pnpm turbo run dev<cr>",
+            function()
+                require("toggleterm.terminal").Terminal:new({
+                    cmd = "pnpm turbo run dev",
+                    direction = "float",
+                    close_on_exit = false,
+                }):toggle()
+            end,
             desc = "Turbo Dev"
         }, {
             "<leader>Tb",
-            "<cmd>!pnpm turbo run build<cr>",
+            function()
+                require("toggleterm.terminal").Terminal:new({
+                    cmd = "pnpm turbo run build",
+                    direction = "float",
+                    close_on_exit = false,
+                }):toggle()
+            end,
             desc = "Turbo Build"
         }, {
             "<leader>Tl",
-            "<cmd>!pnpm turbo run lint<cr>",
+            function()
+                require("toggleterm.terminal").Terminal:new({
+                    cmd = "pnpm turbo run lint",
+                    direction = "float",
+                    close_on_exit = false,
+                }):toggle()
+            end,
             desc = "Turbo Lint"
         }, {
             "<leader>Tc",
-            "<cmd>!pnpm turbo run check-types<cr>",
+            function()
+                require("toggleterm.terminal").Terminal:new({
+                    cmd = "pnpm turbo run check-types",
+                    direction = "float",
+                    close_on_exit = false,
+                }):toggle()
+            end,
             desc = "Turbo Type Check"
         }, {
             "<leader>Te",
-            "<cmd>!pnpm turbo run test<cr>",
+            function()
+                require("toggleterm.terminal").Terminal:new({
+                    cmd = "pnpm turbo run test",
+                    direction = "float",
+                    close_on_exit = false,
+                }):toggle()
+            end,
             desc = "Turbo Test"
         }}
     }

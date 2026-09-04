@@ -4,9 +4,11 @@ return {
     "windwp/nvim-ts-autotag",
     event = { "BufReadPre", "BufNewFile" },
     opts = {
-      enable_close = true,
-      enable_rename = true,
-      enable_close_on_slash = false,
+      opts = {
+        enable_close = true,
+        enable_rename = true,
+        enable_close_on_slash = false,
+      },
     },
   },
 
@@ -25,11 +27,5 @@ return {
       { "<leader>pd", function() require("package-info").delete() end, desc = "Delete Package" },
       { "<leader>pc", function() require("package-info").change_version() end, desc = "Change Version" },
     },
-  },
-
-  -- Tailwind CSS color previews (nvim-cmp only, disabled for blink.cmp)
-  {
-    "roobert/tailwindcss-colorizer-cmp.nvim",
-    enabled = false,
   },
 }

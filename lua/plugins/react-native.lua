@@ -1,34 +1,4 @@
-return { -- React Native DAP adapter (attach to Metro / Hermes)
-{
-    "mfussenegger/nvim-dap",
-    optional = true,
-    config = function()
-        local dap = require("dap")
-        local install_dir = vim.fn.stdpath("data") .. "/mason"
-
-        dap.adapters["pwa-node"] = dap.adapters["pwa-node"] or {
-            type = "server",
-            host = "localhost",
-            port = "${port}",
-            executable = {
-                command = "node",
-                args = {install_dir .. "/packages/js-debug-adapter" .. "/js-debug/src/dapDebugServer.js", "${port}"}
-            }
-        }
-
-        -- Attach to React Native running on Metro
-        dap.configurations.typescriptreact = dap.configurations.typescriptreact or {}
-        table.insert(dap.configurations.typescriptreact, {
-            type = "pwa-node",
-            request = "attach",
-            name = "Attach to React Native (Metro)",
-            port = 8081,
-            cwd = "${workspaceFolder}",
-            sourceMaps = true,
-            skipFiles = {"<node_internals>/**", "node_modules/**"}
-        })
-    end
-}, -- Treesitter parsers for RN filetypes
+return { -- Treesitter parsers for RN filetypes
 {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)

@@ -12,11 +12,12 @@ _G.get_project_root = function()
     return root or cwd
 end
 
--- Ensure user local bin and bun bin directories are in PATH for LSP language servers (vtsls, tailwind, etc.)
+-- Ensure Mason bin, user local bin, bun bin, and cargo bin directories are in PATH
 local home = os.getenv("HOME") or ""
 if home ~= "" then
     local uv = vim.uv or vim.loop
-    local extra_paths = {home .. "/.local/bin", home .. "/.bun/bin", home .. "/.cargo/bin"}
+    local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
+    local extra_paths = {mason_bin, home .. "/.local/bin", home .. "/.bun/bin", home .. "/.cargo/bin"}
     local current_path = os.getenv("PATH") or ""
     for _, p in ipairs(extra_paths) do
         if uv.fs_stat(p) and not current_path:find(p, 1, true) then
@@ -25,6 +26,10 @@ if home ~= "" then
     end
     vim.env.PATH = current_path
 end
+
+-- Terminal color & background initialization (prevents DSR background query delays)
+vim.opt.termguicolors = true
+vim.opt.background = "dark"
 
 -- Disable unused providers to avoid healthcheck warnings & speed startup
 vim.g.loaded_python3_provider = 0

@@ -2,14 +2,6 @@
 -- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
 -- Add any additional autocmds here
 
--- Filetype detection for Prisma
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-    pattern = "*.prisma",
-    callback = function()
-        vim.bo.filetype = "prisma"
-    end
-})
-
 -- Auto save files only when losing focus (prevent formatting lag during active editing)
 vim.api.nvim_create_autocmd("FocusLost", {
     pattern = "*",
@@ -119,11 +111,25 @@ vim.api.nvim_create_autocmd("WinEnter", {
         end
         local ft = vim.bo[bufnr].filetype
         local bt = vim.bo[bufnr].buftype
-        if not float_ignore_ft[ft] and bt ~= "prompt" and bt ~= "terminal" then
+        if not float_ignore_ft[ft] and bt ~= "prompt" and bt ~= "terminal" and (bt ~= "" or not vim.bo[bufnr].modifiable) then
             if not vim.b[bufnr]._float_close_mapped then
                 vim.b[bufnr]._float_close_mapped = true
-                vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
-                vim.keymap.set("n", "<Esc>", "<cmd>close<CR>", { buffer = bufnr, silent = true, nowait = true })
+                vim.keymap.set("n", "q", function()
+                    local win = vim.api.nvim_get_current_win()
+                    local cfg = vim.api.nvim_win_get_config(win)
+                    if cfg and cfg.relative ~= "" then
+                        pcall(vim.api.nvim_win_close, win, false)
+                    else
+                        vim.cmd("normal! q")
+                    end
+                end, { buffer = bufnr, silent = true, nowait = true })
+                vim.keymap.set("n", "<Esc>", function()
+                    local win = vim.api.nvim_get_current_win()
+                    local cfg = vim.api.nvim_win_get_config(win)
+                    if cfg and cfg.relative ~= "" then
+                        pcall(vim.api.nvim_win_close, win, false)
+                    end
+                end, { buffer = bufnr, silent = true, nowait = true })
             end
         end
     end

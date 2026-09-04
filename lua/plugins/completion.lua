@@ -8,32 +8,6 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                 enabled = false
             },
 
-            -- Disable cspell_ls (incompatible dynamic registration causes nil index error)
-            cspell_ls = {
-                enabled = false
-            },
-
-            -- Disable custom_elements_ls (same dynamic registration issue)
-            custom_elements_ls = {
-                enabled = false
-            },
-
-            -- Disable tsgo (same dynamic registration issue)
-            tsgo = {
-                enabled = false
-            },
-
-            -- Disable grammar/spell checkers in comments
-            harper_ls = {
-                enabled = false
-            },
-            ltex = {
-                enabled = false
-            },
-            typos_lsp = {
-                enabled = false
-            },
-
             -- Disable emmet_ls in favor of emmet_language_server
             emmet_ls = {
                 enabled = false
@@ -174,36 +148,36 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
 
             -- Emmet completions for JSX/TSX (like VS Code built-in)
             emmet_language_server = {
-                cmd = (vim.fn.executable("node") == 1) and { "emmet-language-server", "--stdio" }
-                    or {
-                        vim.fn.expand("~/.bun/bin/bun"),
+                cmd = (vim.fn.executable("emmet-language-server") == 1) and { "emmet-language-server", "--stdio" }
+                    or (vim.fn.filereadable(vim.fn.stdpath("data") .. "/mason/packages/emmet-language-server/node_modules/@olrtg/emmet-language-server/dist/index.js") == 1) and {
+                        "node",
                         vim.fn.stdpath("data")
                             .. "/mason/packages/emmet-language-server/node_modules/@olrtg/emmet-language-server/dist/index.js",
                         "--stdio",
-                    },
+                    } or nil,
                 filetypes = {"html", "css", "scss", "javascriptreact", "typescriptreact", "svelte", "vue"}
             },
 
             html = {
-                cmd = (vim.fn.executable("node") == 1)
+                cmd = (vim.fn.executable("vscode-html-language-server") == 1)
                         and { "vscode-html-language-server", "--stdio" }
-                    or {
-                        vim.fn.expand("~/.bun/bin/bun"),
+                    or (vim.fn.filereadable(vim.fn.stdpath("data") .. "/mason/packages/html-lsp/node_modules/vscode-langservers-extracted/bin/vscode-html-language-server") == 1) and {
+                        "node",
                         vim.fn.stdpath("data")
                             .. "/mason/packages/html-lsp/node_modules/vscode-langservers-extracted/bin/vscode-html-language-server",
                         "--stdio",
-                    },
+                    } or nil,
             },
 
             -- Tailwind CSS IntelliSense (class suggestions like VS Code extension)
             tailwindcss = {
-                cmd = (vim.fn.executable("node") == 1) and { "tailwindcss-language-server", "--stdio" }
-                    or {
-                        vim.fn.expand("~/.bun/bin/bun"),
+                cmd = (vim.fn.executable("tailwindcss-language-server") == 1) and { "tailwindcss-language-server", "--stdio" }
+                    or (vim.fn.filereadable(vim.fn.stdpath("data") .. "/mason/packages/tailwindcss-language-server/node_modules/@tailwindcss/language-server/bin/tailwindcss-language-server") == 1) and {
+                        "node",
                         vim.fn.stdpath("data")
                             .. "/mason/packages/tailwindcss-language-server/node_modules/@tailwindcss/language-server/bin/tailwindcss-language-server",
                         "--stdio",
-                    },
+                    } or nil,
                 filetypes = {"html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact",
                              "svelte", "vue"},
                 settings = {
@@ -221,14 +195,14 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
 
             -- CSS hover info and completions
             cssls = {
-                cmd = (vim.fn.executable("node") == 1)
+                cmd = (vim.fn.executable("vscode-css-language-server") == 1)
                         and { "vscode-css-language-server", "--stdio" }
-                    or {
-                        vim.fn.expand("~/.bun/bin/bun"),
+                    or (vim.fn.filereadable(vim.fn.stdpath("data") .. "/mason/packages/css-lsp/node_modules/vscode-langservers-extracted/bin/vscode-css-language-server") == 1) and {
+                        "node",
                         vim.fn.stdpath("data")
                             .. "/mason/packages/css-lsp/node_modules/vscode-langservers-extracted/bin/vscode-css-language-server",
                         "--stdio",
-                    },
+                    } or nil,
             },
 
             -- JSON schemas: turbo.json, tsconfig, package.json etc.
@@ -420,9 +394,4 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
         }
     }
 }, -- Snippets: friendly-snippets gives VS Code-like snippet library
-{"rafamadriz/friendly-snippets"},
--- Disable separate lsp_signature plugin to avoid double floating windows (blink.cmp handles signature cleanly)
-{
-    "ray-x/lsp_signature.nvim",
-    enabled = false
-}}
+{"rafamadriz/friendly-snippets"}}

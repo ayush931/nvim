@@ -5,35 +5,31 @@ return { -- Refactoring: extract function/variable, inline variable, etc.
     keys = {{
         "<leader>re",
         function()
-            return require("refactoring").extract_func()
+            require("refactoring").extract_func()
         end,
         desc = "Extract Function",
         mode = "v",
-        expr = true
     }, {
         "<leader>rv",
         function()
-            return require("refactoring").extract_var()
+            require("refactoring").extract_var()
         end,
         desc = "Extract Variable",
         mode = "v",
-        expr = true
     }, {
         "<leader>ri",
         function()
-            return require("refactoring").inline_var()
+            require("refactoring").inline_var()
         end,
         desc = "Inline Variable",
         mode = {"n", "v"},
-        expr = true
     }, {
         "<leader>rb",
         function()
-            return require("refactoring").inline_func()
+            require("refactoring").inline_func()
         end,
         desc = "Inline Function",
         mode = {"n", "v"},
-        expr = true
     }, {
         "<leader>rr",
         function()

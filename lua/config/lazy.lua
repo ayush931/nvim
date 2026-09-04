@@ -11,6 +11,55 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Defensive guard: Prevent Mason's "Package is already installing" crash/race condition
+local ok_pkg, Package = pcall(require, "mason-core.package")
+if ok_pkg and Package and type(Package.install) == "function" then
+    local orig_install = Package.install
+    Package.install = function(self, opts, callback)
+        if self:is_installing() then
+            if callback then
+                self:once("closed", vim.schedule_wrap(function()
+                    callback(self:is_installed())
+                end))
+            end
+            return self.handle
+        end
+        return orig_install(self, opts, callback)
+    end
+end
+
+-- Defensive guard: Ensure treesitter cli callback handles installing/installed states without throwing or hanging
+local ok_ts, ts_util = pcall(require, "lazyvim.util.treesitter")
+if ok_ts and ts_util then
+    ts_util.ensure_treesitter_cli = function(cb)
+        if vim.fn.executable("tree-sitter") == 1 then
+            return cb(true)
+        end
+        if not pcall(require, "mason") then
+            return cb(false, "`mason.nvim` is disabled in your config, so we cannot install it automatically.")
+        end
+        local mr = require("mason-registry")
+        mr.refresh(function()
+            local p = mr.get_package("tree-sitter-cli")
+            if p:is_installed() then
+                return cb(true)
+            end
+            if p:is_installing() then
+                p:once("closed", vim.schedule_wrap(function()
+                    cb(p:is_installed())
+                end))
+                return
+            end
+            p:install(
+                nil,
+                vim.schedule_wrap(function(success)
+                    cb(success, success and nil or "Failed to install `tree-sitter-cli` with `mason.nvim`.")
+                end)
+            )
+        end)
+    end
+end
+
 require("lazy").setup({
     spec = { -- add LazyVim and import its plugins
     {
@@ -43,7 +92,7 @@ require("lazy").setup({
     performance = {
         rtp = {
             -- disable some rtp plugins
-            disabled_plugins = {"gzip", "matchit", "matchparen", "tarPlugin", "tohtml", "tutor", "zipPlugin"}
+            disabled_plugins = {"gzip", "matchit", "matchparen", "netrwPlugin", "tarPlugin", "tohtml", "tutor", "zipPlugin"}
         }
     }
 })

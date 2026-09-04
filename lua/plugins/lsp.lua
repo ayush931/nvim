@@ -36,10 +36,6 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
             }
         }
     }
-}, -- Dim unused variables/imports natively via Neovim 0.10+ DiagnosticUnnecessary
-{
-    "zbirenbaum/neodim",
-    enabled = false,
 }, -- Better LSP UI: rename, code actions, hover with nice borders
 {
     "nvimdev/lspsaga.nvim",

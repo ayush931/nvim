@@ -4,9 +4,9 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
     opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
         vim.list_extend(opts.ensure_installed, { -- LSPs
-        "bash-language-server", "clangd", "docker-compose-language-service", "dockerfile-language-server", "gopls",
+        "bash-language-server", "clangd", "docker-compose-language-service", "dockerfile-language-server",
         "graphql-language-service-cli", "json-lsp", "lua-language-server", "marksman", "prisma-language-server",
-        "basedpyright", "ruff", "rust-analyzer", "sqlls", "taplo", "terraform-ls", "tflint", "yaml-language-server",
+        "basedpyright", "rust-analyzer", "sqlls", "taplo", "terraform-ls", "tflint", "yaml-language-server",
 
         -- Formatters / linters
         "black", "clang-format", "goimports", "isort", "prettierd", "shfmt", "stylua", "sqlfluff", -- DAP / debuggers
@@ -100,31 +100,12 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
         }
     }
 }, {
-    "mason-org/mason-lspconfig.nvim",
-    optional = true,
-    opts = function(_, opts)
-        opts.ensure_installed = opts.ensure_installed or {}
-        opts.automatic_installation = opts.automatic_installation or false
-        local blocked = {
-            gopls = true,
-            ruff = true
-        }
-        local filtered = {}
-        for _, server in ipairs(opts.ensure_installed) do
-            if not blocked[server] then
-                table.insert(filtered, server)
-            end
-        end
-        opts.ensure_installed = filtered
-        return opts
-    end
-}, {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
         vim.list_extend(opts.ensure_installed,
             {"bash", "c", "cpp", "css", "csv", "dockerfile", "go", "graphql", "html", "javascript", "jsdoc", "json",
-             "json5", "jsonc", "lua", "markdown", "markdown_inline", "python", "regex", "rust", "sql", "terraform",
+             "json5", "lua", "markdown", "markdown_inline", "python", "regex", "rust", "sql", "terraform",
              "toml", "tsx", "typescript", "vim", "yaml"})
         return opts
     end

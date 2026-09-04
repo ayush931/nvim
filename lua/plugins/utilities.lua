@@ -41,22 +41,4 @@ return { -- ── Surround: add/change/delete surrounding pairs ─────
             winblend = 0
         }
     }
-},
-  -- ── Comment box: create pretty comment headers ─────────────────
-{
-    "LudoPinelli/comment-box.nvim",
-    enabled = false,
-    event = "VeryLazy",
-    keys = {{
-        "<leader>cb",
-        "<cmd>CBccbox<cr>",
-        mode = {"n", "v"},
-        desc = "Comment Box (centered)"
-    }, {
-        "<leader>cl",
-        "<cmd>CBccline<cr>",
-        mode = {"n", "v"},
-        desc = "Comment Line (centered)"
-    }},
-    opts = {}
 }}

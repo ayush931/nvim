@@ -26,11 +26,6 @@ return {
             "-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never, ColumnLimit: 0, AccessModifierOffset: -4}",
           },
         },
-        clang_format = {
-          prepend_args = {
-            "-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never, ColumnLimit: 0, AccessModifierOffset: -4}",
-          },
-        },
       },
     },
   },

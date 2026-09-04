@@ -1,8 +1,4 @@
-return { -- Prisma syntax highlighting plugin
-{
-    "prisma/vim-prisma",
-    ft = "prisma"
-}, -- Treesitter for better syntax highlighting
+return { -- Treesitter for better syntax highlighting
 {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)

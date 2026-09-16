@@ -32,7 +32,10 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
                 max_width = 120,
                 max_height = 30,
                 wrap = true,
-                close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+                -- No CursorMoved: the box must stay open while reading and
+                -- yanking its text (it still closes on leave / typing / focus loss,
+                -- or manually with q / <Esc>).
+                close_events = { "BufLeave", "InsertEnter", "FocusLost" },
             }
         }
     }
@@ -137,12 +140,12 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         desc = "Rename Symbol"
     }, {
         "<leader>cD",
-        "<cmd>Lspsaga show_line_diagnostics ++unfocus<CR>",
-        desc = "Line Diagnostics (Full Error & Suggestions)"
+        "<cmd>Lspsaga show_line_diagnostics<CR>",
+        desc = "Line Diagnostics (focus, copyable)"
     }, {
         "gl",
         "<cmd>Lspsaga show_line_diagnostics ++unfocus<CR>",
-        desc = "Show Line Diagnostics & Suggestions"
+        desc = "Peek Line Diagnostics"
     }, {
         "[d",
         "<cmd>Lspsaga diagnostic_jump_prev<CR>",
@@ -151,10 +154,8 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         "]d",
         "<cmd>Lspsaga diagnostic_jump_next<CR>",
         desc = "Next Diagnostic"
-    }, {
-        "<leader>co",
-        "<cmd>Lspsaga outline<CR>",
-        desc = "Symbol Outline"
+        -- NOTE: symbol outline lives once in aerial.nvim (<leader>cs / <leader>cS);
+        -- removed a duplicate Lspsaga outline keymap here.
     }}
 }, -- Incremental LSP rename with live preview
 {
@@ -177,9 +178,32 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         vim.g.navic_silence = true
         vim.api.nvim_create_autocmd("LspAttach", {
             callback = function(args)
+                if not vim.api.nvim_buf_is_valid(args.buf) then
+                    return
+                end
                 local client = vim.lsp.get_client_by_id(args.data.client_id)
-                if client and client.supports_method("textDocument/documentSymbol") then
-                    require("nvim-navic").attach(client, args.buf)
+                if not client or client:is_stopped() then
+                    return
+                end
+                -- supports_method API changed in Nvim 0.11 (colon + bufnr arg);
+                -- try the new form first, fall back to the legacy dot call.
+                local supported = false
+                local ok, res = pcall(function()
+                    return client:supports_method("textDocument/documentSymbol", args.buf)
+                end)
+                if ok then
+                    supported = res
+                else
+                    local ok2, res2 = pcall(function()
+                        return client.supports_method("textDocument/documentSymbol")
+                    end)
+                    supported = ok2 and res2 or false
+                end
+                if supported then
+                    local ok_attach = pcall(require("nvim-navic").attach, client, args.buf)
+                    if not ok_attach then
+                        return
+                    end
                 end
             end
         })

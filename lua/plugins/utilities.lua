@@ -17,7 +17,10 @@ return { -- ── Surround: add/change/delete surrounding pairs ─────
             map = "<M-e>" -- Alt-e to fast-wrap
         }
     }
-}, {
+}, -- Required stub: mini.pairs is a LazyVim core plugin (nvim-autopairs above
+-- is the active pair engine). This entry installs nothing; it keeps the core
+-- plugin disabled. Deleting it would re-enable LazyVim's default mini.pairs.
+{
     "nvim-mini/mini.pairs",
     enabled = false
 }, -- ── Undo Tree: visualize and navigate undo history ─────────────

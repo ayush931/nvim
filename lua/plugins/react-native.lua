@@ -8,60 +8,59 @@ return { -- Treesitter parsers for RN filetypes
             })
         return opts
     end
-}, -- LSP: ESLint for RN linting (vtsls is configured in completion.lua)
-{
-    "neovim/nvim-lspconfig",
-    opts = {
-        servers = {
-            eslint = {}
-        }
-    }
 }, -- React Native commands via which-key
+-- NOTE: eslint/vtsls/neotest-jest are configured once in
+-- turborepo.lua / completion.lua / testing.lua respectively (removed duplicate
+-- empty/subset blocks that used to live here and fought those definitions).
 {
     "folke/which-key.nvim",
-    opts = {
-        spec = {{
+    opts = function(_, opts)
+        local function rn_term(cmd, direction, size)
+            _G._rn_terms = _G._rn_terms or {}
+            local key = cmd .. "|" .. (direction or "float")
+            local term = _G._rn_terms[key]
+            if term then
+                term:toggle()
+                return
+            end
+            term = require("toggleterm.terminal").Terminal:new({
+                cmd = cmd,
+                direction = direction or "float",
+                size = size,
+                close_on_exit = false,
+                on_exit = function()
+                    _G._rn_terms[key] = nil
+                end,
+            })
+            _G._rn_terms[key] = term
+            term:toggle()
+        end
+        opts.spec = opts.spec or {}
+        vim.list_extend(opts.spec, {{
             "<leader>R",
             group = "react-native"
         }, {
             "<leader>Rs",
             function()
-                require("toggleterm.terminal").Terminal:new({
-                    cmd = "npx react-native start",
-                    direction = "float",
-                    close_on_exit = false
-                }):toggle()
+                rn_term("npx react-native start", "float")
             end,
             desc = "Start Metro"
         }, {
             "<leader>Ra",
             function()
-                require("toggleterm.terminal").Terminal:new({
-                    cmd = "npx react-native run-android",
-                    direction = "float",
-                    close_on_exit = false
-                }):toggle()
+                rn_term("npx react-native run-android", "float")
             end,
             desc = "Run Android"
         }, {
             "<leader>Ri",
             function()
-                require("toggleterm.terminal").Terminal:new({
-                    cmd = "npx react-native run-ios",
-                    direction = "float",
-                    close_on_exit = false
-                }):toggle()
+                rn_term("npx react-native run-ios", "float")
             end,
             desc = "Run iOS"
         }, {
             "<leader>Rl",
             function()
-                require("toggleterm.terminal").Terminal:new({
-                    cmd = "npx react-native log-android",
-                    direction = "horizontal",
-                    close_on_exit = false,
-                    size = 15
-                }):toggle()
+                rn_term("npx react-native log-android", "horizontal", 15)
             end,
             desc = "Logcat (Android)"
         }, {
@@ -72,24 +71,7 @@ return { -- Treesitter parsers for RN filetypes
             "<leader>Rr",
             "<cmd>!adb shell input text 'RR'<cr>",
             desc = "Reload (Android)"
-        }}
-    }
-}, -- Neotest for running Jest tests (common in RN projects)
-{
-    "nvim-neotest/neotest",
-    optional = true,
-    dependencies = {"nvim-neotest/neotest-jest"},
-    opts = {
-        adapters = {
-            ["neotest-jest"] = {
-                jestCommand = "npx jest",
-                env = {
-                    CI = "true"
-                },
-                cwd = function()
-                    return vim.fn.getcwd()
-                end
-            }
-        }
-    }
+        }})
+        return opts
+    end
 }}

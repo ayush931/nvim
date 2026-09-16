@@ -14,7 +14,7 @@ return {{
         function()
             require("neo-tree.command").execute({
                 toggle = true,
-                dir = vim.uv.cwd()
+                dir = (vim.uv or vim.loop).cwd()
             })
         end,
         desc = "Explorer NeoTree (cwd)"
@@ -52,7 +52,7 @@ return {{
                 if type(path) == "string" and path ~= "" and vim.fn.isdirectory(path) == 0 then
                     vim.schedule(function()
                         if vim.fn.filereadable(path) == 1 then
-                            vim.cmd("edit " .. vim.fn.fnameescape(path))
+                            pcall(vim.cmd, "edit " .. vim.fn.fnameescape(path))
                         end
                     end)
                 end

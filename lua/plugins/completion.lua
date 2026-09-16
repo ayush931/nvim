@@ -15,14 +15,28 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
 
             -- vtsls: VS Code's TypeScript language service for Neovim (optimized for zero typing lag)
             vtsls = {
-                cmd = (vim.fn.executable("vtsls") == 1) and { "vtsls", "--stdio" }
-                    or (vim.fn.executable("node") == 1) and { "node", vim.fn.stdpath("data") .. "/mason/packages/vtsls/node_modules/@vtsls/language-server/bin/vtsls.js", "--stdio" }
-                    or {
-                        vim.fn.expand("~/.bun/bin/bun"),
-                        vim.fn.stdpath("data")
-                            .. "/mason/packages/vtsls/node_modules/@vtsls/language-server/bin/vtsls.js",
-                        "--stdio",
-                    },
+                -- Resolve the server binary safely at setup time.
+                -- Prefer a PATH binary (mason/bin is added to PATH in options.lua),
+                -- then mason's bundled vtsls.js via node/bun, else nil so lspconfig
+                -- falls back to its default cmd resolution (avoids spawning a
+                -- non-existent file, which previously broke JS/TS LSP silently).
+                cmd = (function()
+                    if vim.fn.executable("vtsls") == 1 then
+                        return { "vtsls", "--stdio" }
+                    end
+                    local vtsls_js = vim.fn.stdpath("data")
+                        .. "/mason/packages/vtsls/node_modules/@vtsls/language-server/bin/vtsls.js"
+                    if vim.fn.filereadable(vtsls_js) == 1 then
+                        if vim.fn.executable("node") == 1 then
+                            return { "node", vtsls_js, "--stdio" }
+                        end
+                        local bun = vim.fn.expand("~/.bun/bin/bun")
+                        if vim.fn.executable(bun) == 1 then
+                            return { bun, vtsls_js, "--stdio" }
+                        end
+                    end
+                    return nil
+                end)(),
                 settings = {
                     typescript = {
                         updateImportsOnFileMove = {
@@ -208,15 +222,25 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
             -- JSON schemas: turbo.json, tsconfig, package.json etc.
             jsonls = {
                 before_init = function(_, new_config)
+                    local ok, schemastore = pcall(require, "schemastore")
+                    if not ok or not schemastore then
+                        return
+                    end
+                    new_config.settings = new_config.settings or {}
                     new_config.settings.json = new_config.settings.json or {}
                     new_config.settings.json.schemas = new_config.settings.json.schemas or {}
-                    vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas({
-                        extra = {{
-                            name = "turbo.json",
-                            fileMatch = {"turbo.json"},
-                            url = "https://turbo.build/schema.json"
-                        }}
-                    }))
+                    local ok_schemas, schemas = pcall(function()
+                        return schemastore.json.schemas({
+                            extra = {{
+                                name = "turbo.json",
+                                fileMatch = {"turbo.json"},
+                                url = "https://turbo.build/schema.json"
+                            }}
+                        })
+                    end)
+                    if ok_schemas and type(schemas) == "table" then
+                        vim.list_extend(new_config.settings.json.schemas, schemas)
+                    end
                 end,
                 settings = {
                     json = {

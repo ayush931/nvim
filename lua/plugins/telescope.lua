@@ -17,7 +17,8 @@ return {
       {
         "<leader>fF",
         function()
-          require("telescope.builtin").find_files({ cwd = vim.uv.cwd(), hidden = true })
+          local cwd = (vim.uv or vim.loop).cwd() or vim.fn.getcwd()
+          require("telescope.builtin").find_files({ cwd = cwd, hidden = true })
         end,
         desc = "Find Files (cwd)",
       },
@@ -53,7 +54,14 @@ return {
     opts = function(_, opts)
       opts.defaults = opts.defaults or {}
       opts.defaults.color_devicons = true
-      opts.defaults.file_ignore_patterns = vim.list_extend(opts.defaults.file_ignore_patterns or {}, {
+      -- Dedupe on every evaluation: this opts func can run more than once
+      -- (lazy reload), and plain list_extend would stack duplicates.
+      opts.defaults.file_ignore_patterns = opts.defaults.file_ignore_patterns or {}
+      local seen = {}
+      for _, p in ipairs(opts.defaults.file_ignore_patterns) do
+        seen[p] = true
+      end
+      for _, p in ipairs({
         "node_modules",
         ".git/",
         "dist",
@@ -61,7 +69,12 @@ return {
         "build",
         "coverage",
         ".turbo",
-      })
+      }) do
+        if not seen[p] then
+          table.insert(opts.defaults.file_ignore_patterns, p)
+          seen[p] = true
+        end
+      end
 
       opts.defaults.layout_strategy = "horizontal"
       opts.defaults.layout_config = vim.tbl_deep_extend("force", opts.defaults.layout_config or {}, {
@@ -72,7 +85,13 @@ return {
       opts.defaults.sorting_strategy = "ascending"
 
       opts.extensions = opts.extensions or {}
-      opts.extensions["ui-select"] = require("telescope.themes").get_dropdown({})
+      local ok_themes, themes = pcall(require, "telescope.themes")
+      if ok_themes and themes then
+        local ok_dd, dropdown = pcall(themes.get_dropdown, {})
+        if ok_dd and dropdown then
+          opts.extensions["ui-select"] = dropdown
+        end
+      end
       opts.extensions.live_grep_args = {
         auto_quoting = true,
       }
@@ -81,8 +100,9 @@ return {
     config = function(_, opts)
       local telescope = require("telescope")
       telescope.setup(opts)
-      telescope.load_extension("ui-select")
-      telescope.load_extension("live_grep_args")
+      -- pcall: missing/failed extensions previously aborted telescope setup.
+      pcall(telescope.load_extension, "ui-select")
+      pcall(telescope.load_extension, "live_grep_args")
     end,
   },
 

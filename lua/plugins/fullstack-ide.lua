@@ -140,7 +140,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
     opts = {
         spec = {{
             "<leader>d",
-            group = "data/db"
+            group = "debug/data"
         }, {
             "<leader>dd",
             "<cmd>DBUIToggle<cr>",

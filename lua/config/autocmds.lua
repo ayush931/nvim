@@ -19,9 +19,10 @@ vim.api.nvim_create_autocmd("FocusLost", {
     end
 })
 
--- C / C++ 4-space tab and indentation settings (expandtab, shiftwidth=4, tabstop=4, softtabstop=4)
+-- C-like 4-space settings for filetypes without a dedicated ftplugin file
+-- (c/cpp live once in after/ftplugin/c.lua and after/ftplugin/cpp.lua).
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "c", "cpp", "cuda", "objc", "objcpp", "proto" },
+    pattern = { "cuda", "objc", "objcpp", "proto" },
     callback = function()
         vim.opt_local.tabstop = 4
         vim.opt_local.shiftwidth = 4
@@ -104,7 +105,11 @@ vim.api.nvim_create_autocmd("WinEnter", {
         if not ok or not config or config.relative == "" then
             return
         end
+        -- Word-wrap the box so long errors/warnings/suggestions stay fully
+        -- visible inside the float (wrap at word boundaries, keep indent).
         vim.wo[winid].wrap = true
+        vim.wo[winid].linebreak = true
+        vim.wo[winid].breakindent = true
         local bufnr = vim.api.nvim_win_get_buf(winid)
         if not vim.api.nvim_buf_is_valid(bufnr) then
             return
@@ -116,18 +121,28 @@ vim.api.nvim_create_autocmd("WinEnter", {
                 vim.b[bufnr]._float_close_mapped = true
                 vim.keymap.set("n", "q", function()
                     local win = vim.api.nvim_get_current_win()
-                    local cfg = vim.api.nvim_win_get_config(win)
-                    if cfg and cfg.relative ~= "" then
+                    local ok_cfg, cfg = pcall(vim.api.nvim_win_get_config, win)
+                    if ok_cfg and cfg and cfg.relative ~= "" then
                         pcall(vim.api.nvim_win_close, win, false)
                     else
-                        vim.cmd("normal! q")
+                        -- No longer a float (buffer reused in a normal window):
+                        -- drop this buffer-local mapping so `q` regains its
+                        -- default behavior (macros, help-close, etc.), then
+                        -- re-feed the key. Previously this ran `normal! q`,
+                        -- which broke macro recording and help buffers.
+                        pcall(vim.keymap.del, "n", "q", { buffer = bufnr })
+                        vim.b[bufnr]._float_close_mapped = false
+                        vim.api.nvim_feedkeys("q", "n", false)
                     end
                 end, { buffer = bufnr, silent = true, nowait = true })
                 vim.keymap.set("n", "<Esc>", function()
                     local win = vim.api.nvim_get_current_win()
-                    local cfg = vim.api.nvim_win_get_config(win)
-                    if cfg and cfg.relative ~= "" then
+                    local ok_cfg, cfg = pcall(vim.api.nvim_win_get_config, win)
+                    if ok_cfg and cfg and cfg.relative ~= "" then
                         pcall(vim.api.nvim_win_close, win, false)
+                    else
+                        pcall(vim.keymap.del, "n", "<Esc>", { buffer = bufnr })
+                        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
                     end
                 end, { buffer = bufnr, silent = true, nowait = true })
             end

@@ -40,7 +40,10 @@ if ok_ts and ts_util then
         end
         local mr = require("mason-registry")
         mr.refresh(function()
-            local p = mr.get_package("tree-sitter-cli")
+            local ok_pkg, p = pcall(mr.get_package, "tree-sitter-cli")
+            if not ok_pkg or not p then
+                return cb(false, "Package `tree-sitter-cli` not found in `mason-registry`.")
+            end
             if p:is_installed() then
                 return cb(true)
             end

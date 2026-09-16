@@ -99,24 +99,47 @@ return { -- Neotest: unified test runner UI (run/debug tests like VS Code Testin
         }), require("neotest-jest")({
             jestCommand = "npx jest",
             jestConfigFile = function(file)
-                local root = require("neotest-jest.util").find_package_json_ancestor(file)
-                if root then
-                    local config = root .. "/jest.config.ts"
-                    if vim.fn.filereadable(config) == 1 then
-                        return config
-                    end
-                    config = root .. "/jest.config.js"
-                    if vim.fn.filereadable(config) == 1 then
-                        return config
+                -- Safely locate the nearest jest config; return nil (auto-discover)
+                -- instead of a non-existent path (previously always returned
+                -- jest.config.ts even when only .js/.cjs or package.json existed).
+                local ok_util, jest_util = pcall(require, "neotest-jest.util")
+                local root
+                if ok_util and jest_util then
+                    local ok_root, ancestor = pcall(jest_util.find_package_json_ancestor, file)
+                    if ok_root then
+                        root = ancestor
                     end
                 end
-                return vim.fn.getcwd() .. "/jest.config.ts"
+                root = root or ((_G.get_project_root and _G.get_project_root()) or vim.fn.getcwd())
+                for _, name in ipairs({
+                    "jest.config.ts", "jest.config.js", "jest.config.cjs", "jest.config.mjs",
+                    "jest.config.cts", "jest.config.mts", "jest.config.json",
+                }) do
+                    local candidate = root .. "/" .. name
+                    if vim.fn.filereadable(candidate) == 1 then
+                        return candidate
+                    end
+                end
+                return nil
             end,
             env = {
                 CI = "true"
             },
             cwd = function(file)
-                return require("neotest-jest.util").find_package_json_ancestor(file) or vim.fn.getcwd()
+                local ok_util, jest_util = pcall(require, "neotest-jest.util")
+                if ok_util and jest_util then
+                    local ok_root, ancestor = pcall(jest_util.find_package_json_ancestor, file)
+                    if ok_root and ancestor and ancestor ~= "" then
+                        return ancestor
+                    end
+                end
+                if _G.get_project_root then
+                    local ok_root, root = pcall(_G.get_project_root)
+                    if ok_root and root and root ~= "" then
+                        return root
+                    end
+                end
+                return vim.fn.getcwd()
             end
         })}
 
@@ -182,7 +205,7 @@ return { -- Neotest: unified test runner UI (run/debug tests like VS Code Testin
     opts = {
         spec = {{
             "<leader>t",
-            group = "test/turbo"
+            group = "test/terminal"
         }}
     }
 }}

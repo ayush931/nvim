@@ -31,13 +31,48 @@ end, {
     desc = "Copy File Absolute Path"
 })
 
+-- Copy line diagnostics (errors / warnings / suggestions) to the clipboard.
+-- The float itself is focusable + wrapped, so you can also open it (<leader>cD),
+-- visually select any part and yank; this shortcut skips the float entirely.
+map("n", "<leader>cy", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+        return
+    end
+    local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
+    local diags = vim.diagnostic.get(bufnr, { lnum = lnum })
+    if #diags == 0 then
+        vim.notify("No diagnostics on this line", vim.log.levels.INFO)
+        return
+    end
+    table.sort(diags, function(a, b)
+        return a.severity < b.severity
+    end)
+    local lines = {}
+    for _, d in ipairs(diags) do
+        local sev = (vim.diagnostic.severity[d.severity] or "UNKNOWN"):lower()
+        local src = d.source and (" (" .. d.source .. ")") or ""
+        local code = d.code and (" [" .. tostring(d.code) .. "]") or ""
+        table.insert(lines, string.format("[%s]%s%s: %s", sev, src, code, d.message))
+    end
+    local text = table.concat(lines, "\n")
+    vim.fn.setreg("+", text)
+    vim.fn.setreg('"', text)
+    vim.notify("Copied " .. #diags .. " diagnostic(s) to clipboard", vim.log.levels.INFO)
+end, {
+    desc = "Copy Line Diagnostics to Clipboard"
+})
+
 map("n", "<leader>uh", function()
     local enabled = vim.lsp.inlay_hint.is_enabled({
         bufnr = 0
     })
-    vim.lsp.inlay_hint.enable(not enabled, {
+    local new_state = not enabled
+    vim.g.lsp_inlay_hints_enabled = new_state
+    vim.lsp.inlay_hint.enable(new_state, {
         bufnr = 0
     })
+    vim.notify("Inlay hints " .. (new_state and "enabled" or "disabled"), vim.log.levels.INFO)
 end, {
     desc = "Toggle Inlay Hints"
 })

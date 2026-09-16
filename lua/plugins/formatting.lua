@@ -9,12 +9,9 @@ return {
         proto = { "clang-format" },
       },
       formatters = {
-        prettier = {
-          prepend_args = { "--tab-width", "4" },
-        },
-        prettierd = {
-          prepend_args = { "--tab-width", "4" },
-        },
+        -- NOTE: no custom --tab-width for prettier/prettierd on purpose.
+        -- Forcing 4 spaces broke JS/TS projects that configure 2 spaces via
+        -- .prettierrc / package.json. Let the project config decide instead.
         shfmt = {
           prepend_args = { "-i", "4" },
         },

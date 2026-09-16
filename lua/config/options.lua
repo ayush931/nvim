@@ -81,8 +81,12 @@ if vim.g.neovide then
     vim.g.neovide_floating_blur_amount_y = 3
 end
 
--- Cursor shaping: block in normal/visual/command, ultra-thin vertical line (1%) in insert mode
-vim.opt.guicursor = "n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver1-Cursor/lCursor,r-cr:hor20-rCursor,o:hor50-Cursor"
+-- Cursor shaping: block in normal/visual/command, hairline vertical bar in insert mode
+-- NOTE: ver1 is the thinnest bar Neovim allows (1% of cell width, hairline), with Windows-style blink cadence.
+local function apply_cursor_shape()
+    vim.opt.guicursor = "n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver1-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,r-cr:hor20-rCursor,o:hor50-Cursor,t:block-TermCursor"
+end
+apply_cursor_shape()
 
 -- Ensure cursor highlight groups are pure white across all modes
 local function set_cursor_highlights()
@@ -99,7 +103,11 @@ local function set_cursor_highlights()
 end
 set_cursor_highlights()
 vim.api.nvim_create_autocmd({"ColorScheme", "VimEnter"}, {
-    callback = set_cursor_highlights,
+    callback = function()
+        -- Re-assert hairline insert cursor: some colorschemes/plugins reset 'guicursor'
+        apply_cursor_shape()
+        set_cursor_highlights()
+    end,
 })
 
 -- Auto-save related options
@@ -127,8 +135,10 @@ if vim.env.WAYLAND_DISPLAY and vim.fn.executable("wl-copy") == 1 and vim.fn.exec
     local paste_cmd = "wl-paste --no-newline --type text/plain"
     local paste_primary_cmd = "wl-paste --primary --no-newline --type text/plain"
     if vim.fn.executable("timeout") == 1 then
-        paste_cmd = "timeout 0.05 " .. paste_cmd
-        paste_primary_cmd = "timeout 0.05 " .. paste_primary_cmd
+        -- 1s cap: long enough for large pastes (50ms truncated big JS/TS
+        -- clipboard content), short enough to avoid UI hangs when wl-paste blocks.
+        paste_cmd = "timeout 1 " .. paste_cmd
+        paste_primary_cmd = "timeout 1 " .. paste_primary_cmd
     end
 
     vim.g.clipboard = {
@@ -171,8 +181,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
         end
         local dir = vim.fn.fnamemodify(event.file, ":p:h")
         local uv = vim.uv or vim.loop
-        if not uv.fs_stat(dir) then
-            vim.fn.mkdir(dir, "p")
+        if uv and not uv.fs_stat(dir) then
+            -- pcall: read-only filesystems / permission errors previously
+            -- raised during :w and aborted the write.
+            pcall(vim.fn.mkdir, dir, "p")
         end
     end
 })

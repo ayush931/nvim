@@ -34,7 +34,7 @@ end, {
 -- Copy line diagnostics (errors / warnings / suggestions) to the clipboard.
 -- The float itself is focusable + wrapped, so you can also open it (<leader>cD),
 -- visually select any part and yank; this shortcut skips the float entirely.
-map("n", "<leader>cy", function()
+local function copy_line_diags()
     local bufnr = vim.api.nvim_get_current_buf()
     if not vim.api.nvim_buf_is_valid(bufnr) then
         return
@@ -59,8 +59,38 @@ map("n", "<leader>cy", function()
     vim.fn.setreg("+", text)
     vim.fn.setreg('"', text)
     vim.notify("Copied " .. #diags .. " diagnostic(s) to clipboard", vim.log.levels.INFO)
-end, {
+end
+map("n", "<leader>cy", copy_line_diags, {
     desc = "Copy Line Diagnostics to Clipboard"
+})
+map("n", "<leader>ce", copy_line_diags, {
+    desc = "Copy Line Errors to Clipboard"
+})
+map("n", "<leader>cd", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
+    local diags = vim.diagnostic.get(bufnr, { lnum = lnum })
+    if #diags == 0 then
+        vim.notify("No diagnostics on this line", vim.log.levels.INFO)
+        return
+    end
+    local fbuf, fwin = vim.diagnostic.open_float(bufnr, {
+        scope = "line",
+        focus = true,
+        focusable = true,
+        border = "rounded",
+        header = "",
+        prefix = "",
+        source = "always",
+        wrap = true,
+        max_width = math.min(100, math.max(60, math.floor(vim.o.columns * 0.85))),
+        close_events = { "BufLeave", "InsertEnter", "FocusLost" },
+    })
+    if fwin and vim.api.nvim_win_is_valid(fwin) then
+        pcall(vim.api.nvim_set_current_win, fwin)
+    end
+end, {
+    desc = "Line Diagnostics Box (Focus & Copyable)"
 })
 
 map("n", "<leader>uh", function()

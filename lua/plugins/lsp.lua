@@ -17,11 +17,7 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         diagnostics = {
             underline = true,
             update_in_insert = false,
-            virtual_text = {
-                spacing = 4,
-                source = "if_many",
-                prefix = "●"
-            },
+            virtual_text = false, -- Only show inside the box, hide default inline text
             severity_sort = true,
             float = {
                 focusable = true,
@@ -74,6 +70,9 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         diagnostic = {
             max_width = 0.9,
             max_height = 0.8,
+            max_show_width = 0.9,
+            max_show_height = 0.8,
+            wrap_long_lines = true,
             wrap_line = true,
             show_code_action = true,
             show_source = true,
@@ -126,10 +125,6 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         desc = "Signature Help",
         mode = "i"
     }, {
-        "<leader>cd",
-        "<cmd>Lspsaga peek_definition<CR>",
-        desc = "Peek Definition"
-    }, {
         "<leader>ca",
         "<cmd>Lspsaga code_action<CR>",
         desc = "Code Action",
@@ -140,12 +135,12 @@ return { -- Core LSP enhancements: inlay hints, codelens, diagnostics
         desc = "Rename Symbol"
     }, {
         "<leader>cD",
-        "<cmd>Lspsaga show_line_diagnostics<CR>",
-        desc = "Line Diagnostics (focus, copyable)"
+        "<cmd>Lspsaga show_buf_diagnostics<CR>",
+        desc = "Buffer Diagnostics Box"
     }, {
         "gl",
         "<cmd>Lspsaga show_line_diagnostics ++unfocus<CR>",
-        desc = "Peek Line Diagnostics"
+        desc = "Peek Line Diagnostics (Box)"
     }, {
         "[d",
         "<cmd>Lspsaga diagnostic_jump_prev<CR>",

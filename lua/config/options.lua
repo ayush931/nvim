@@ -173,6 +173,39 @@ vim.opt.expandtab = true
 
 vim.opt.showtabline = 0
 
+-- Configure diagnostics float box globally with rounded borders and word wrap
+vim.diagnostic.config({
+    underline = true,
+    update_in_insert = false,
+    virtual_text = false, -- Only show inside the box, hide default inline text
+    severity_sort = true,
+    float = {
+        focusable = true,
+        border = "rounded",
+        source = "always",
+        header = "",
+        prefix = "",
+        max_width = 100,
+        max_height = 30,
+        wrap = true,
+        close_events = { "BufLeave", "InsertEnter", "FocusLost" },
+    },
+})
+
+-- Default LSP hover handler with rounded border and word wrap
+local orig_hover = vim.lsp.handlers["textDocument/hover"]
+vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
+    config = vim.tbl_extend("force", {
+        border = "rounded",
+        max_width = 100,
+        max_height = 30,
+        wrap = true,
+    }, config or {})
+    if orig_hover then
+        return orig_hover(err, result, ctx, config)
+    end
+end
+
 -- Auto-create missing parent directories when saving a file
 vim.api.nvim_create_autocmd("BufWritePre", {
     callback = function(event)

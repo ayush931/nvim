@@ -22,7 +22,7 @@ local c = {
 
 local hl = {
   Normal = { fg = c.fg, bg = c.bg },
-  NormalNC = { fg = c.fg, bg = c.bg_alt },
+  NormalNC = { fg = c.fg, bg = c.bg },
   NormalFloat = { fg = c.fg, bg = c.bg_float },
   FloatBorder = { fg = c.border, bg = c.bg_float },
   FloatTitle = { fg = c.blue, bg = c.bg_float },
@@ -195,6 +195,8 @@ local hl = {
 
   NeoTreeNormal = { fg = c.fg, bg = c.bg },
   NeoTreeNormalNC = { fg = c.fg, bg = c.bg },
+  NeoTreeSignColumn = { fg = c.fg, bg = c.bg },
+  NeoTreeEndOfBuffer = { fg = c.bg, bg = c.bg },
   NeoTreeDirectoryName = { fg = c.blue, bold = true },
   NeoTreeDirectoryIcon = { fg = c.blue },
   NeoTreeFileName = { fg = c.fg },
@@ -229,7 +231,9 @@ local hl = {
   FlashMatch = { fg = c.fg_bright, bg = c.bg_active },
 
   SnacksNormal = { fg = c.fg, bg = c.bg },
+  SnacksNormalNC = { fg = c.fg, bg = c.bg },
   SnacksWinBar = { fg = c.fg, bg = c.bg },
+  SnacksWinBarNC = { fg = c.fg, bg = c.bg },
   SnacksPickerNormal = { fg = c.fg, bg = c.bg_float },
   SnacksPickerBorder = { fg = c.border, bg = c.bg_float },
   SnacksPickerTitle = { fg = c.blue, bg = c.bg_float, bold = true },

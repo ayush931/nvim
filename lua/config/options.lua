@@ -17,7 +17,7 @@ local home = os.getenv("HOME") or ""
 if home ~= "" then
     local uv = vim.uv or vim.loop
     local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
-    local extra_paths = {mason_bin, home .. "/.local/bin", home .. "/.bun/bin", home .. "/.cargo/bin"}
+    local extra_paths = {mason_bin, home .. "/go/bin", home .. "/.local/go/bin", home .. "/.local/bin", home .. "/.bun/bin", home .. "/.cargo/bin"}
     local current_path = os.getenv("PATH") or ""
     for _, p in ipairs(extra_paths) do
         if uv.fs_stat(p) and not current_path:find(p, 1, true) then
@@ -81,10 +81,10 @@ if vim.g.neovide then
     vim.g.neovide_floating_blur_amount_y = 3
 end
 
--- Cursor shaping: block in normal/visual/command, hairline vertical bar in insert mode
--- NOTE: ver1 is the thinnest bar Neovim allows (1% of cell width, hairline), with Windows-style blink cadence.
+-- Cursor shaping: solid block in normal/visual/command, solid hairline vertical bar in insert mode
+-- NOTE: ver1 is the thinnest bar Neovim allows (1% of cell width, hairline); blinkon0 ensures solid cursor.
 local function apply_cursor_shape()
-    vim.opt.guicursor = "n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver1-blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,r-cr:hor20-rCursor,o:hor50-Cursor,t:block-TermCursor"
+    vim.opt.guicursor = "n-v-c-sm:block-blinkon0-Cursor/lCursor,i-ci-ve:ver1-blinkon0-Cursor/lCursor,r-cr:hor20-blinkon0-rCursor,o:hor50-blinkon0-Cursor,t:block-blinkon0-TermCursor"
 end
 apply_cursor_shape()
 
@@ -201,8 +201,9 @@ vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
         max_height = 30,
         wrap = true,
     }, config or {})
-    if orig_hover then
-        return orig_hover(err, result, ctx, config)
+    local handler = orig_hover or vim.lsp.handlers.hover
+    if handler then
+        return handler(err, result, ctx, config)
     end
 end
 

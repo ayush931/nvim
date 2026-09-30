@@ -2,7 +2,7 @@ return { -- Neotest: unified test runner UI (run/debug tests like VS Code Testin
 {
     "nvim-neotest/neotest",
     dependencies = {"nvim-neotest/nvim-nio", "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter", -- Test adapters
-                    "nvim-neotest/neotest-jest", "marilari88/neotest-vitest", "nvim-neotest/neotest-python"},
+                    "nvim-neotest/neotest-jest", "marilari88/neotest-vitest", "nvim-neotest/neotest-python", "nvim-neotest/neotest-go"},
     keys = {{
         "<leader>tn",
         function()
@@ -150,6 +150,16 @@ return { -- Neotest: unified test runner UI (run/debug tests like VS Code Testin
                     justMyCode = false
                 },
                 runner = "pytest"
+            }))
+        end
+
+        local has_go, neotest_go = pcall(require, "neotest-go")
+        if has_go then
+            table.insert(adapters, neotest_go({
+                experimental = {
+                    test_table = true,
+                },
+                args = { "-count=1", "-timeout=60s" }
             }))
         end
 

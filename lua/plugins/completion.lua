@@ -337,6 +337,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
             ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
             ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
             ["<CR>"] = { "accept", "fallback" },
+            ["<C-y>"] = { "select_and_accept", "fallback" },
             ["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
             ["<C-space>"] = { "show_documentation", "hide_documentation", "fallback" },
             ["<C-d>"] = { "show_documentation", "hide_documentation", "fallback" },
@@ -360,7 +361,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
             },
             list = {
                 selection = {
-                    preselect = false,
+                    preselect = true,
                     auto_insert = false
                 }
             },

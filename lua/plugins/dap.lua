@@ -95,6 +95,59 @@ return {
           end
         end
       end
+
+      -- Go Delve DAP configuration
+      if vim.fn.executable("dlv") == 1 then
+        dap.adapters.delve = function(callback, config)
+          if config.mode == "remote" and config.request == "attach" then
+            callback({
+              type = "server",
+              host = config.host or "127.0.0.1",
+              port = config.port or "38697",
+            })
+          else
+            callback({
+              type = "server",
+              port = "${port}",
+              executable = {
+                command = "dlv",
+                args = { "dap", "-l", "127.0.0.1:${port}" },
+                detached = vim.fn.has("win32") == 0,
+              },
+            })
+          end
+        end
+
+        dap.configurations.go = {
+          {
+            type = "delve",
+            name = "Debug",
+            request = "launch",
+            program = "${file}",
+          },
+          {
+            type = "delve",
+            name = "Debug test",
+            request = "launch",
+            mode = "test",
+            program = "${file}",
+          },
+          {
+            type = "delve",
+            name = "Debug test (go.mod)",
+            request = "launch",
+            mode = "test",
+            program = "./${relativeFileDirname}",
+          },
+          {
+            type = "delve",
+            name = "Attach (Delve remote)",
+            request = "attach",
+            mode = "remote",
+            port = "38697",
+          },
+        }
+      end
     end,
   },
   {

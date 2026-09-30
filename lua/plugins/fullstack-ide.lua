@@ -1,6 +1,23 @@
 return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
 {
     "mason-org/mason.nvim",
+    init = function()
+        local ok_pkg, Package = pcall(require, "mason-core.package")
+        if ok_pkg and Package and type(Package.install) == "function" then
+            local orig_install = Package.install
+            Package.install = function(self, opts, callback)
+                if self:is_installing() then
+                    if callback then
+                        self:once("closed", vim.schedule_wrap(function()
+                            callback(self:is_installed())
+                        end))
+                    end
+                    return self.handle
+                end
+                return orig_install(self, opts, callback)
+            end
+        end
+    end,
     opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
         vim.list_extend(opts.ensure_installed, { -- LSPs
@@ -33,17 +50,32 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
             docker_compose_language_service = {},
             gopls = {
                 mason = false,
-                enabled = vim.fn.executable("gopls") == 1,
                 settings = {
                     gopls = {
                         gofumpt = true,
                         usePlaceholders = true,
-                        completeUnimported = true
+                        completeUnimported = true,
+                        analyses = {
+                            unusedparams = true,
+                            shadow = true,
+                            nilness = true,
+                            unusedwrite = true,
+                        },
+                        hints = {
+                            assignVariableTypes = true,
+                            compositeLiteralFields = true,
+                            compositeLiteralTypes = true,
+                            constantValues = true,
+                            functionTypeParameters = true,
+                            parameterNames = true,
+                            rangeVariableTypes = true,
+                        },
+                        staticcheck = true,
+                        semanticTokens = true,
                     }
                 }
             },
             graphql = {},
-            jsonls = {},
             lua_ls = {
                 settings = {
                     Lua = {
@@ -104,7 +136,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
     opts = function(_, opts)
         opts.ensure_installed = opts.ensure_installed or {}
         vim.list_extend(opts.ensure_installed,
-            {"bash", "c", "cpp", "css", "csv", "dockerfile", "go", "graphql", "html", "javascript", "jsdoc", "json",
+            {"bash", "c", "cpp", "css", "csv", "dockerfile", "go", "gomod", "gosum", "gowork", "graphql", "html", "javascript", "jsdoc", "json",
              "json5", "lua", "markdown", "markdown_inline", "python", "regex", "rust", "sql", "terraform",
              "toml", "tsx", "typescript", "vim", "yaml"})
         return opts

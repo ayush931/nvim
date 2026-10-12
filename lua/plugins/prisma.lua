@@ -26,7 +26,7 @@ return { -- Treesitter for better syntax highlighting
     optional = true,
     opts = {
         formatters_by_ft = {
-            prisma = {"prismaFmt"}
+            prisma = {}
         }
     }
 }}

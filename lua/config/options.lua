@@ -2,26 +2,30 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 -- Find and dynamically resolve the project root directory of the active file or workspace
-_G.get_project_root = function()
-    local current = vim.api.nvim_buf_get_name(0)
-    local cwd = (vim.uv or vim.loop).cwd() or vim.fn.getcwd()
-    if current == "" or vim.bo.buftype ~= "" then
-        return cwd
-    end
-    local root = vim.fs.root(current, {".git", "turbo.json", "package.json", "Makefile", "Cargo.toml", "go.mod"})
-    return root or cwd
-end
+_G.get_project_root = require("config.project").root
 
 -- Ensure Mason bin, user local bin, bun bin, and cargo bin directories are in PATH
 local home = os.getenv("HOME") or ""
 if home ~= "" then
     local uv = vim.uv or vim.loop
     local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
-    local extra_paths = {mason_bin, home .. "/go/bin", home .. "/.local/go/bin", home .. "/.local/bin", home .. "/.bun/bin", home .. "/.cargo/bin"}
+    local extra_paths = {
+        mason_bin,
+        home .. "/go/bin",
+        home .. "/.local/go/bin",
+        home .. "/.local/bin",
+        home .. "/.bun/bin",
+        home .. "/.cargo/bin",
+    }
     local current_path = os.getenv("PATH") or ""
+    local path_entries = {}
+    for entry in current_path:gmatch("[^:]+") do
+        path_entries[entry] = true
+    end
     for _, p in ipairs(extra_paths) do
-        if uv.fs_stat(p) and not current_path:find(p, 1, true) then
+        if uv.fs_stat(p) and not path_entries[p] then
             current_path = p .. ":" .. current_path
+            path_entries[p] = true
         end
     end
     vim.env.PATH = current_path
@@ -38,7 +42,7 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 
 -- Use Git/project root first, then monorepo markers, LSP, then CWD as fallback
-vim.g.root_spec = {".git", "turbo.json", "package.json", "lsp", "cwd"}
+vim.g.root_spec = { ".git", "turbo.json", "package.json", "lsp", "cwd" }
 
 -- GUI Font & Zoom settings (Fira Code with ligatures)
 local default_font_size = 11
@@ -49,25 +53,22 @@ local current_font_size = default_font_size
 local function set_font_size(size)
     current_font_size = math.max(6, math.min(30, size))
     vim.opt.guifont = "Fira Code:h" .. current_font_size
-    if vim.g.neovide then
-        vim.g.neovide_scale_factor = current_font_size / 12.0
-    end
 end
 
-vim.keymap.set({"n", "v", "i"}, "<C-->", function()
+vim.keymap.set({ "n", "v", "i" }, "<C-->", function()
     set_font_size(current_font_size - 1)
 end, {
-    desc = "Zoom Out (Reduce Font Size)"
+    desc = "Zoom Out (Reduce Font Size)",
 })
-vim.keymap.set({"n", "v", "i"}, "<C-=>", function()
+vim.keymap.set({ "n", "v", "i" }, "<C-=>", function()
     set_font_size(current_font_size + 1)
 end, {
-    desc = "Zoom In (Increase Font Size)"
+    desc = "Zoom In (Increase Font Size)",
 })
-vim.keymap.set({"n", "v", "i"}, "<C-0>", function()
+vim.keymap.set({ "n", "v", "i" }, "<C-0>", function()
     set_font_size(default_font_size)
 end, {
-    desc = "Reset Font Size"
+    desc = "Reset Font Size",
 })
 
 -- Neovide-specific clarity enhancements
@@ -84,7 +85,8 @@ end
 -- Cursor shaping: solid block in normal/visual/command, solid hairline vertical bar in insert mode
 -- NOTE: ver1 is the thinnest bar Neovim allows (1% of cell width, hairline); blinkon0 ensures solid cursor.
 local function apply_cursor_shape()
-    vim.opt.guicursor = "n-v-c-sm:block-blinkon0-Cursor/lCursor,i-ci-ve:ver1-blinkon0-Cursor/lCursor,r-cr:hor20-blinkon0-rCursor,o:hor50-blinkon0-Cursor,t:block-blinkon0-TermCursor"
+    vim.opt.guicursor =
+        "n-v-c-sm:block-blinkon0-Cursor/lCursor,i-ci-ve:ver1-blinkon0-Cursor/lCursor,r-cr:hor20-blinkon0-rCursor,o:hor50-blinkon0-Cursor,t:block-blinkon0-TermCursor"
 end
 apply_cursor_shape()
 
@@ -102,7 +104,8 @@ local function set_cursor_highlights()
     vim.api.nvim_set_hl(0, "rCursor", { fg = c_bg, bg = c_white, bold = true })
 end
 set_cursor_highlights()
-vim.api.nvim_create_autocmd({"ColorScheme", "VimEnter"}, {
+vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
+    group = vim.api.nvim_create_augroup("ConfigCursor", { clear = true }),
     callback = function()
         -- Re-assert hairline insert cursor: some colorschemes/plugins reset 'guicursor'
         apply_cursor_shape()
@@ -145,13 +148,13 @@ if vim.env.WAYLAND_DISPLAY and vim.fn.executable("wl-copy") == 1 and vim.fn.exec
         name = "wl-clipboard",
         copy = {
             ["+"] = "wl-copy --type text/plain",
-            ["*"] = "wl-copy --primary --type text/plain"
+            ["*"] = "wl-copy --primary --type text/plain",
         },
         paste = {
             ["+"] = paste_cmd,
-            ["*"] = paste_primary_cmd
+            ["*"] = paste_primary_cmd,
         },
-        cache_enabled = 1
+        cache_enabled = 1,
     }
 end
 
@@ -173,42 +176,9 @@ vim.opt.expandtab = true
 
 vim.opt.showtabline = 0
 
--- Configure diagnostics float box globally with rounded borders and word wrap
-vim.diagnostic.config({
-    underline = true,
-    update_in_insert = false,
-    virtual_text = false, -- Only show inside the box, hide default inline text
-    severity_sort = true,
-    float = {
-        focusable = true,
-        border = "rounded",
-        source = "always",
-        header = "",
-        prefix = "",
-        max_width = 100,
-        max_height = 30,
-        wrap = true,
-        close_events = { "BufLeave", "InsertEnter", "FocusLost" },
-    },
-})
-
--- Default LSP hover handler with rounded border and word wrap
-local orig_hover = vim.lsp.handlers["textDocument/hover"]
-vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
-    config = vim.tbl_extend("force", {
-        border = "rounded",
-        max_width = 100,
-        max_height = 30,
-        wrap = true,
-    }, config or {})
-    local handler = orig_hover or vim.lsp.handlers.hover
-    if handler then
-        return handler(err, result, ctx, config)
-    end
-end
-
 -- Auto-create missing parent directories when saving a file
 vim.api.nvim_create_autocmd("BufWritePre", {
+    group = vim.api.nvim_create_augroup("ConfigCreateDirectory", { clear = true }),
     callback = function(event)
         if not event.file or event.file == "" or event.file:match("^%w%w+:[\\/][\\/]") then
             return
@@ -220,5 +190,5 @@ vim.api.nvim_create_autocmd("BufWritePre", {
             -- raised during :w and aborted the write.
             pcall(vim.fn.mkdir, dir, "p")
         end
-    end
+    end,
 })

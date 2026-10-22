@@ -124,7 +124,7 @@ return
             "<leader>wp",
             function()
                 local win = require("window-picker").pick_window()
-                if win then
+                if win and vim.api.nvim_win_is_valid(win) then
                     vim.api.nvim_set_current_win(win)
                 end
             end,

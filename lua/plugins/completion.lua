@@ -53,6 +53,13 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
         "neovim/nvim-lspconfig",
         opts = {
             servers = {
+                -- Request names instead of argument snippets from every LSP.
+                -- Blink adds the empty parentheses when accepting a callable.
+                ["*"] = {
+                    capabilities = {
+                        textDocument = { completion = { completionItem = { snippetSupport = false } } },
+                    },
+                },
                 -- Disable ts_ls in favor of vtsls
                 ts_ls = {
                     enabled = false,
@@ -238,11 +245,11 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
         opts = {
             keymap = {
                 preset = "super-tab",
-                ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-                ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+                ["<Tab>"] = { "select_next", "fallback" },
+                ["<S-Tab>"] = { "select_prev", "fallback" },
                 ["<CR>"] = { "accept", "fallback" },
                 ["<C-y>"] = { "select_and_accept", "fallback" },
-                ["<C-space>"] = { "show_documentation", "hide_documentation", "fallback" },
+                ["<C-space>"] = { "show", "hide", "fallback" },
                 ["<C-d>"] = { "show_documentation", "hide_documentation", "fallback" },
                 ["<C-f>"] = { "scroll_documentation_down", "fallback" },
                 ["<C-b>"] = { "scroll_documentation_up", "fallback" },
@@ -259,8 +266,8 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                 trigger = {
                     show_on_keyword = true,
                     show_on_trigger_character = true,
-                    show_on_insert_on_trigger_character = true,
-                    show_on_accept_on_trigger_character = true,
+                    show_on_insert_on_trigger_character = false,
+                    show_on_accept_on_trigger_character = false,
                 },
                 list = {
                     selection = {
@@ -276,12 +283,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                     draw = {
                         columns = {
                             { "kind_icon" },
-                            {
-                                "label",
-                                "label_description",
-                                gap = 1,
-                            },
-                            { "source_name" },
+                            { "label" },
                         },
                     },
                 },
@@ -307,7 +309,10 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                 },
             },
             sources = {
-                default = { "lsp", "path", "snippets", "buffer" },
+                default = { "lsp", "path", "buffer" },
+                transform_items = function(ctx, items)
+                    return require("config.completion").without_arguments(ctx, items)
+                end,
                 providers = {
                     lsp = {
                         async = true,
@@ -317,7 +322,7 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                         score_offset = 80,
                     },
                     snippets = {
-                        score_offset = 70,
+                        enabled = false,
                     },
                     buffer = {
                         score_offset = 50,
@@ -326,6 +331,5 @@ return { -- Use vtsls (wraps VS Code's TypeScript extension) for identical sugge
                 },
             },
         },
-    }, -- Snippets: friendly-snippets gives VS Code-like snippet library
-    { "rafamadriz/friendly-snippets" },
+    },
 }

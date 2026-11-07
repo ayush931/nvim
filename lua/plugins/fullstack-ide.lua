@@ -2,6 +2,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
     {
         "mason-org/mason.nvim",
         opts = function(_, opts)
+            opts.max_concurrent_installers = 2
             opts.ensure_installed = opts.ensure_installed or {}
             -- Language servers are installed by mason-lspconfig. Listing them here
             -- as well starts competing installs of the same package.
@@ -47,7 +48,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
                         "--clang-tidy",
                         "--header-insertion=iwyu",
                         "--completion-style=detailed",
-                        "--function-arg-placeholders=1",
+                        "--function-arg-placeholders=0",
                         "--fallback-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never, ColumnLimit: 0, AccessModifierOffset: -4}",
                     },
                 },
@@ -59,7 +60,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
                     settings = {
                         gopls = {
                             gofumpt = true,
-                            usePlaceholders = true,
+                            usePlaceholders = false,
                             completeUnimported = true,
                             analyses = {
                                 unusedparams = true,
@@ -86,7 +87,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
                     settings = {
                         Lua = {
                             completion = {
-                                callSnippet = "Replace",
+                                callSnippet = "Disable",
                             },
                             diagnostics = {
                                 globals = { "vim" },
@@ -114,6 +115,7 @@ return { -- Language and tool coverage across web/mobile/ai-ml/web3/data stacks
                 rust_analyzer = {
                     settings = {
                         ["rust-analyzer"] = {
+                            completion = { callable = { snippets = "add_parentheses" } },
                             cargo = {
                                 allFeatures = true,
                             },

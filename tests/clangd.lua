@@ -5,7 +5,9 @@ vim.fn.mkdir(root, "p")
 local data = vim.fn.stdpath("data")
 vim.opt.rtp:append(data .. "/lazy/nvim-lspconfig")
 local spec = dofile("lua/plugins/fullstack-ide.lua")[2].opts.servers.clangd
-spec.cmd[1] = data .. "/mason/bin/clangd"
+local mason_clangd = data .. "/mason/bin/clangd"
+spec.cmd[1] = vim.fn.executable(mason_clangd) == 1 and mason_clangd or vim.fn.exepath("clangd")
+assert(spec.cmd[1] ~= "", "Install clangd with Mason or Xcode Command Line Tools")
 spec.cmd[#spec.cmd + 1] = "--background-index=false"
 spec.cmd[#spec.cmd + 1] = "--log=error"
 local path = root .. "/main.cpp"

@@ -1,2 +1,21 @@
 WRN 2026-08-28T23:58:05.891 ?.35       socket_watcher_start:184: Failed to remove stale socket /run/user/1000/nvim.35.0: no such file or directory
 WRN 2026-08-28T23:58:05.891 ?.35       server_start:197: Failed to start server: no such file or directory: /run/user/1000/
+WRN 2026-10-30T14:07:29.019 ?.55778    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/2k1VvP/nvim.55778.0
+WRN 2026-10-30T14:07:32.399 ?.55837    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/EZFbw9/nvim.55837.0
+WRN 2026-10-30T14:07:44.848 ?.55948    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/0z9K5K/nvim.55948.0
+WRN 2026-10-30T14:08:11.699 ?.56365    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/RFNd9v/nvim.56365.0
+WRN 2026-10-30T14:08:11.699 ?.56367    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/rPGj5U/nvim.56367.0
+WRN 2026-10-30T14:12:40.066 ?.59894    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/VXl7Gj/nvim.59894.0
+WRN 2026-10-30T14:29:45.787 ?.79383    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/4hWvZg/nvim.79383.0
+WRN 2026-10-30T14:33:42.796 ?.83134    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/M4ms3O/nvim.83134.0
+WRN 2026-10-30T14:36:01.452 ?.85432    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/iB5Gmg/nvim.85432.0
+WRN 2026-10-30T14:36:59.386 ?.86224    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/p8gRAw/nvim.86224.0
+WRN 2026-10-30T14:42:26.821 ?.92603    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/ODVq42/nvim.92603.0
+WRN 2026-10-30T14:43:16.325 ?.93711    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/hgqPHL/nvim.93711.0
+WRN 2026-10-30T14:44:55.278 ?.95004    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/Dh3Zl6/nvim.95004.0
+WRN 2026-10-30T14:48:29.223 ?.99267    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/3SUaSF/nvim.99267.0
+WRN 2026-10-30T14:50:41.877 ?.1696     server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/RFVzm5/nvim.1696.0
+WRN 2026-10-30T14:52:59.107 ?.4458     server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/UFXiQP/nvim.4458.0
+WRN 2026-10-30T14:53:03.328 ?.4539     server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/Q4ETm2/nvim.4539.0
+WRN 2026-10-30T14:53:03.328 ?.4537     server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/JHSWDE/nvim.4537.0
+WRN 2026-10-30T17:54:31.682 ?.97439    server_start:197: Failed to start server: operation not permitted: /var/folders/bk/jzk38y7d1pz5h5b6y8sqtkd80000gn/T/nvim.ayush/HjJcNh/nvim.97439.0

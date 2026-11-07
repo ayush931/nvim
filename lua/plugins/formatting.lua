@@ -14,8 +14,9 @@ return {
                 -- .prettierrc / package.json. Let the project config decide instead.
                 ["clang-format"] = {
                     prepend_args = {
-                        "--style=file",
-                        "--fallback-style={BasedOnStyle: Google, IndentWidth: 4, TabWidth: 4, UseTab: Never, ColumnLimit: 0, AccessModifierOffset: -4}",
+                        -- Keep project style rules, but always use four-space indentation.
+                        "--style={BasedOnStyle: InheritParentConfig, IndentWidth: 4, TabWidth: 4, ContinuationIndentWidth: 4, UseTab: Never}",
+                        "--fallback-style=Google",
                     },
                 },
             },

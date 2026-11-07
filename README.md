@@ -41,6 +41,29 @@ Then run:
 
 Use `:checkhealth` to validate toolchain availability.
 
+## macOS setup
+
+Install Xcode Command Line Tools (`xcode-select --install`) and Homebrew, then:
+
+```sh
+brew install python node go ripgrep fd fzf lazygit
+```
+
+The configuration discovers Homebrew in `/opt/homebrew` (Apple Silicon) and
+`/usr/local` (Intel) before loading plugins. This also lets GUI launches use
+Homebrew Python instead of Apple's older Python, which cannot install some Mason
+tools. Mason binaries remain first in PATH. Existing Python virtual environments
+can still be selected with `<leader>cv`.
+
+Restart Neovim after installing tools. Mason retries missing configured tools on
+startup; use `:Mason` to inspect progress. Clipboard support uses macOS `pbcopy`
+and `pbpaste` automatically. For Option/Alt mappings in iTerm2, configure the
+Option key to send Esc+.
+
+Headless health checks cannot detect terminal graphics support reliably. The
+disabled Snacks image module also reports optional image/PDF/LaTeX dependencies;
+these are not required for editing code.
+
 
 ## Notes on Go and Ruff
 

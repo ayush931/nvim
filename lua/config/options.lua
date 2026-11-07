@@ -4,33 +4,6 @@
 -- Find and dynamically resolve the project root directory of the active file or workspace
 _G.get_project_root = require("config.project").root
 
--- Ensure Mason bin, user local bin, bun bin, and cargo bin directories are in PATH
-local home = os.getenv("HOME") or ""
-if home ~= "" then
-    local uv = vim.uv or vim.loop
-    local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
-    local extra_paths = {
-        mason_bin,
-        home .. "/go/bin",
-        home .. "/.local/go/bin",
-        home .. "/.local/bin",
-        home .. "/.bun/bin",
-        home .. "/.cargo/bin",
-    }
-    local current_path = os.getenv("PATH") or ""
-    local path_entries = {}
-    for entry in current_path:gmatch("[^:]+") do
-        path_entries[entry] = true
-    end
-    for _, p in ipairs(extra_paths) do
-        if uv.fs_stat(p) and not path_entries[p] then
-            current_path = p .. ":" .. current_path
-            path_entries[p] = true
-        end
-    end
-    vim.env.PATH = current_path
-end
-
 -- Terminal color & background initialization (prevents DSR background query delays)
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
@@ -90,26 +63,11 @@ local function apply_cursor_shape()
 end
 apply_cursor_shape()
 
--- Ensure cursor highlight groups are pure white across all modes
-local function set_cursor_highlights()
-    local c_white = "#FFFFFF"
-    local c_bg = "#1E2024"
-    vim.api.nvim_set_hl(0, "Cursor", { fg = c_bg, bg = c_white, bold = true })
-    vim.api.nvim_set_hl(0, "lCursor", { fg = c_bg, bg = c_white, bold = true })
-    vim.api.nvim_set_hl(0, "CursorIM", { fg = c_bg, bg = c_white, bold = true })
-    vim.api.nvim_set_hl(0, "TermCursor", { fg = c_bg, bg = c_white, bold = true })
-    vim.api.nvim_set_hl(0, "TermCursorNC", { fg = "#828C9E", bg = "#353A45", bold = true })
-    vim.api.nvim_set_hl(0, "vCursor", { fg = c_bg, bg = c_white, bold = true })
-    vim.api.nvim_set_hl(0, "iCursor", { fg = c_bg, bg = c_white, bold = true })
-    vim.api.nvim_set_hl(0, "rCursor", { fg = c_bg, bg = c_white, bold = true })
-end
-set_cursor_highlights()
 vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
     group = vim.api.nvim_create_augroup("ConfigCursor", { clear = true }),
     callback = function()
         -- Re-assert hairline insert cursor: some colorschemes/plugins reset 'guicursor'
         apply_cursor_shape()
-        set_cursor_highlights()
     end,
 })
 
@@ -173,6 +131,7 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 4
 vim.opt.expandtab = true
+vim.g.autoformat = true -- LazyVim formats on save using the configured formatter.
 
 vim.opt.showtabline = 0
 

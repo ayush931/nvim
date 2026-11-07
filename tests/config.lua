@@ -8,6 +8,24 @@ for _, path in ipairs(vim.fn.glob("lua/plugins/*.lua", false, true)) do
     assert(type(dofile(path)) == "table", "invalid plugin spec: " .. path)
 end
 
+local inherited_path = vim.env.PATH
+vim.env.PATH = "/usr/bin:/bin:/usr/sbin:/sbin"
+local environment = require("config.environment")
+environment.setup()
+local configured_path = vim.env.PATH
+environment.setup()
+assert(vim.env.PATH == configured_path, "PATH entries multiply on reload")
+if vim.fn.has("mac") == 1 then
+    for _, prefix in ipairs({ "/opt/homebrew", "/usr/local" }) do
+        if vim.fn.isdirectory(prefix .. "/bin") == 1 then
+            local brew = assert(configured_path:find(prefix .. "/bin", 1, true), "Homebrew missing from GUI PATH")
+            assert(brew < assert(configured_path:find("/usr/bin", 1, true)), "system tools shadow Homebrew")
+        end
+    end
+end
+vim.env.PATH = inherited_path
+print("PASS GUI tool discovery and stable PATH on reload")
+
 package.preload["telescope.themes"] = function()
     return {
         get_dropdown = function()
@@ -36,6 +54,9 @@ local project = require("config.project")
 local root = vim.fn.tempname()
 local package_dir = root .. "/packages/app"
 vim.fn.mkdir(package_dir .. "/src", "p")
+-- macOS resolves /var to /private/var when a buffer is opened.
+root = assert((vim.uv or vim.loop).fs_realpath(root))
+package_dir = root .. "/packages/app"
 vim.fn.writefile({ "{}" }, root .. "/turbo.json")
 vim.fn.writefile({ "{}" }, package_dir .. "/package.json")
 vim.fn.writefile({ "export default {}" }, root .. "/jest.config.mjs")
@@ -47,6 +68,7 @@ assert(workspace == root and #dirs == 1 and dirs[1] == root .. "/packages", "wor
 -- An ordinary repository with no monorepo ancestor falls back to its root.
 local standalone = vim.fn.tempname()
 vim.fn.mkdir(standalone .. "/.git", "p")
+standalone = assert((vim.uv or vim.loop).fs_realpath(standalone))
 vim.fn.writefile({ "{}" }, standalone .. "/package.json")
 vim.cmd.edit(standalone .. "/index.ts")
 workspace, dirs = project.workspace_dirs()
@@ -88,7 +110,10 @@ assert(languages.typescript.suggest ~= languages.javascript.suggest, "shared mut
 assert(languages.javascript.tsserver == nil, "invalid JavaScript tsserver option")
 local formatters = dofile("lua/plugins/formatting.lua")[1].opts.formatters
 assert(formatters.shfmt == nil and formatters.stylua == nil, "project formatter settings overridden")
-assert(formatters["clang-format"].prepend_args[1] == "--style=file", "clang-format ignores project style")
+assert(
+    formatters["clang-format"].prepend_args[1]:find("BasedOnStyle: InheritParentConfig", 1, true),
+    "clang-format ignores project style"
+)
 print("PASS LSP mapping ownership, independent language settings, formatter configuration")
 local noice
 for _, spec in ipairs(dofile("lua/plugins/completion.lua")) do
